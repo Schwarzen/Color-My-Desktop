@@ -9,8 +9,11 @@ Sass
 
 Install:
 
-git clone 
+'''git clone 
+'''
+'''
 make install
+'''
 
 Color My GNOME installs into ~/.local/bin which may not be automatically included in the PATH of some distrobutions like Arch linux, please add 
 export PATH="$HOME/.local/bin:$PATH"
