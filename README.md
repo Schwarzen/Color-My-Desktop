@@ -1,14 +1,14 @@
 # Color-My-GNOME
 A simple cli tool for changing the colors of the gnome-shell and gtk apps on GNOME
 
-##Requriements:
-###GNOME 49 (may work on older versions)
-###GNOME TWEAKS - [GITHUB](https://github.com/GNOME/gnome-tweaks) 
+## Requriements:
+### GNOME 49 (may work on older versions)
+### GNOME TWEAKS - [GITHUB](https://github.com/GNOME/gnome-tweaks) 
  Ubuntu/Debian: 'sudo apt install gnome-tweaks'  
-###NPM
-###Sass
+### NPM
+### Sass
 
-##Install:
+## Install:
 
 ```
 git clone https://github.com/Schwarzen/Color-My-Gnome.git
@@ -16,13 +16,13 @@ cd /Color-My-Gnome
 make install 
 ```
 
-Color My GNOME installs into ~/.local/bin which may not be automatically included in the PATH of some distrobutions like Arch linux, please add 
-export PATH="$HOME/.local/bin:$PATH"
+Color My GNOME installs into ~/.local/bin which may not be automatically included in the PATH of some distrobutions like Arch linux, 
+please add 'export PATH="$HOME/.local/bin:$PATH"'
 to your .bashrc and run 
-. ~/.bashrc
-to refresh
+'. ~/.bashrc'
+to refresh 
 
-##Usage:
+## Usage:
 
 Run the command 
 ```
