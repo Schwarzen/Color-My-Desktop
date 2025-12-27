@@ -1,0 +1,128 @@
+#!/bin/bash
+
+TARGET_DIR="$HOME/.local/share/Color-My-Gnome/scss"
+
+# Create it if it doesn't exist yet, then move inside
+mkdir -p "$TARGET_DIR"
+cd "$TARGET_DIR" || { echo "Failed to enter $TARGET_DIR"; exit 1; }
+
+
+main_scss="gnome-shell.scss"
+gtk4_scss="gtk4.scss"
+output_css="$HOME/.local/share/themes/Color-My-Gnome/gnome-shell/gnome-shell.css"
+output_gtk4_css="$HOME/.config/gtk-4.0/gtk.css"
+output_gtk4dark_css="$HOME/.config/gtk-4.0/gtk-dark.css"
+SCSS_DIR="$HOME/.local/share/Color-My-Gnome/scss"
+
+# Set your default values here
+DEF_PRIMARY="#3584e4"   # GNOME Blue
+DEF_SECONDARY="#241f31" # Dark Gray
+DEF_TERTIARY="#1e1e1e"  # Deep Black
+DEF_TEXT="#f9f9f9"      # White
+# ---------------------
+
+echo "Select an option:"
+echo "1) Create a NEW color profile"
+echo "2) Use an EXISTING profile"
+read -p "Selection [1-2]: " choice
+
+
+if [ "$choice" == "1" ]; then
+
+# 1. Prompt for names
+read -p "Enter NEW color profile name (e.g., light blue): " filename
+
+
+# 2. Format partial filename
+clean_name=$(echo "$filename" | sed 's/^_//;s/\.scss$//')
+partial_file="_${clean_name}.scss"
+
+
+
+# 4. Prompt for variables
+echo "-----------------------------------------------"
+printf "set primary color or leave blank for default #3584e4 - GNOME Blue %s\n"
+read -p "\$primary: " 
+primary=${primary:-$DEF_PRIMARY}
+printf "set secondary color or leave blank for default #241f31 - Dark Gray %s\n"
+read -p "\$secondary: " secondary
+secondary=${secondary:-$DEF_SECONDARY}
+printf "set tertiary color or leave blank for default #1e1e1e - Deep Black %s\n"
+read -p "\$tertiary: " tertiary
+tertiary=${tertiary:-$DEF_TERTIARY}
+printf "set text color or leave blank for default #f9f9f9 - White %s\n"
+read -p "\$text: " text
+text=${text:-$DEF_TEXT}
+
+# 5. Create partial file
+printf "\$primary: %s;\n\$secondary: %s;\n\$tertiary: %s;\n\$text: %s;\n\$tertiary-light: rgba(\$tertiary, 0.25)%s;\n\$text-light: rgba(\$text, 0.25)%s;\n" \
+       "$primary" "$secondary" "$tertiary"  "$text"  > "$partial_file"
+
+selected_import="$clean_name"
+
+elif [ "$choice" == "2" ]; then
+
+
+    # --- OPTION 2: SELECT EXISTING ---
+    echo "Available profiles in $SCSS_DIR:"
+    # List files, removing underscore and extension for the display
+    files=($(ls "$SCSS_DIR" | grep '^_.*\.scss$' | sed 's/^_//;s/\.scss$//'))
+    
+    if [ ${#files[@]} -eq 0 ]; then
+        echo "No partials found! Exiting." && exit 1
+    fi
+
+    for i in "${!files[@]}"; do
+        echo "$((i+1))) ${files[$i]}"
+    done
+
+    read -p "Select a file number: " file_num
+    selected_import="${files[$((file_num-1))]}"
+    
+    if [ -z "$selected_import" ]; then
+        echo "Invalid selection." && exit 1
+    fi
+else
+    echo "Invalid choice." && exit 1
+fi
+
+
+# 6. Clean existing imports and add new one
+import_statement="@use '$HOME/.local/share/Color-My-Gnome/scss/$selected_import' as *;"
+
+if [ -f "$main_scss" ]; then
+    # Delete any line that starts with @import, regardless of the filename
+    sed -i '/^@use/d' "$main_scss"
+    echo "Removed previous @use statements from $main_scss."
+else
+    touch "$main_scss"
+fi
+
+if [ -f "$gtk4_scss" ]; then
+    # Delete any line that starts with @import, regardless of the filename
+    sed -i '/^@use/d' "$gtk4_scss"
+    echo "Removed previous @use statements from $gtk4_scss."
+else
+    touch "$gtk4_scss"
+fi
+
+# Append the new import at the top of the file
+echo "$import_statement" | cat - "$main_scss" > temp && mv temp "$main_scss"
+
+echo "$import_statement" | cat - "$gtk4_scss" > temp && mv temp "$gtk4_scss"
+
+# 7. Compile SCSS to CSS
+echo "-----------------------------------------------"
+if command -v npx sass &> /dev/null; then
+    echo "Compiling $main_scss to $output_css..."
+    npx sass "$main_scss" "$output_css" --style expanded
+    echo "Compiling to $output_gtk4_css"
+    npx sass "$gtk4_scss" "$output_gtk4_css" --style expanded
+       echo "Compiling to $output_gtk4dark_css"
+       npx sass "$gtk4_scss" "$output_gtk4dark_css" --style expanded
+       
+else
+    echo "Error: 'sass' compiler not found. Install with: npm install -g sass"
+fi
+
+

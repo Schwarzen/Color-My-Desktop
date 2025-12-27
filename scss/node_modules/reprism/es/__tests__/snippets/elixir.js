@@ -1,0 +1,6 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = "# Define a struct for this example\ndefmodule User do\n  defstruct email: nil\nend\n\n# dot syntax\n\"c@c.com\" = %User{email: \"c@c.com\"}.email\n\n# Underlying implementation is a map\n# So Map methods work\n\"c@c.com\" = Map.get(%User{email: \"c@c.com\"}, :email)\n\n# Pattern match to get a value\n%{ email: email }   = %User{email: \"c@c.com\"}\n%User{email: email} = %User{email: \"c@c.com\"}\n\n# Access protocol not available by default\n%User{email: \"c@c.com\"}[:email]\n#** (UndefinedFunctionError) undefined function User.fetch/2 (User does not implement the Access behaviour)\n#             User.fetch(%User{email: \"c@c.com\"}, :email)\n#    (elixir) lib/access.ex:118: Access.fetch/2\n#    (elixir) lib/access.ex:149: Access.get/3\n\n\n# Enumerable protocol not available by default\nEnum.filter( %User{email: \"c@c.com\"}, fn({key, _}) -> key == :email  end)\n#** (Protocol.UndefinedError) protocol Enumerable not implemented for %User{email: \"c@c.com\"}\n#    (elixir) lib/enum.ex:1: Enumerable.impl_for!/1\n#    (elixir) lib/enum.ex:116: Enumerable.reduce/3\n#    (elixir) lib/enum.ex:1477: Enum.reduce/3\n#    (elixir) lib/enum.ex:742: Enum.filter/2";

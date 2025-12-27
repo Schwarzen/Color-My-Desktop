@@ -1,0 +1,66 @@
+{
+  "name": "@jscpd/finder",
+  "version": "4.0.1",
+  "description": "detector of copy/paste in files",
+  "author": "Andrey Kucherenko <kucherenko.andrey@gmail.com>",
+  "homepage": "https://github.com/kucherenko/jscpd#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "typings": "dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./README.md": "./README.md"
+  },
+  "directories": {
+    "src": "src",
+    "test": "__tests__"
+  },
+  "files": [
+    "dist",
+    "html"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/kucherenko/jscpd.git"
+  },
+  "dependencies": {
+    "blamer": "^1.0.6",
+    "bytes": "^3.1.2",
+    "cli-table3": "^0.6.5",
+    "colors": "^1.4.0",
+    "fast-glob": "^3.3.2",
+    "fs-extra": "^11.2.0",
+    "markdown-table": "^2.0.0",
+    "pug": "^3.0.3",
+    "@jscpd/core": "4.0.1",
+    "@jscpd/tokenizer": "4.0.1"
+  },
+  "devDependencies": {
+    "@types/bytes": "^3.1.4",
+    "@types/fs-extra": "^11.0.4",
+    "@types/markdown-table": "^2.0.0",
+    "@types/pug": "^2.0.10",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0",
+    "@jscpd/tsconfig": "5.0.1"
+  },
+  "gitHead": "fa06f839d6c5335a1e9dbf0c7387710fcd42eb54",
+  "scripts": {
+    "build": "tsup-node --dts",
+    "dev": "nodemon",
+    "test": "vitest run",
+    "typecheck": "tsc",
+    "cleanup": "rimraf ./dist .turbo"
+  }
+}

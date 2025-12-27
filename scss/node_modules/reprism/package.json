@@ -1,0 +1,40 @@
+{
+  "name": "reprism",
+  "version": "0.0.11",
+  "description": "Modular Syntax highlighting for the web",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "scripts": {
+    "build": "nwb build-react-component",
+    "clean": "nwb clean-module && nwb clean-demo",
+    "start": "nwb serve-react-demo",
+    "test": "NODE_ENV=test yarn jest src",
+    "testWatch": "yarn test --watchAll",
+    "test:coverage": "nwb test-react --coverage",
+    "test:watch": "nwb test-react --server",
+    "prepublishOnly": "yarn test && yarn build && cp -R lib/languages languages"
+  },
+  "devDependencies": {
+    "eslint-config-react-tools": "^1.2.5",
+    "jest": "^22.4.3",
+    "nwb": "0.21.x"
+  },
+  "author": "Tanner Linsley <tannerlinsley@gmail.com>",
+  "homepage": "https://github.com/tannerlinsley/reprism",
+  "license": "MIT",
+  "repository": "",
+  "keywords": [
+    "Prism",
+    "syntax",
+    "highlighting",
+    "modular"
+  ],
+  "jest": {
+    "verbose": true,
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+    ],
+    "testRegex": "(/__tests__/.*\\.(test))\\.jsx?$"
+  }
+}
