@@ -6,8 +6,11 @@ A simple cli tool for changing the colors of the gnome-shell and gtk apps on GNO
 
 ## Requriements:
  * GNOME 49 (may work on older versions)
- * GNOME TWEAKS - [GITHUB](https://github.com/GNOME/gnome-tweaks) 
+ * GNOME TWEAKS
+    *  [GITHUB](https://github.com/GNOME/gnome-tweaks) 
     * Ubuntu/Debian: `sudo apt install gnome-tweaks`
+ * GNOME User Themes extension
+    * [GNOME Extensions](https://extensions.gnome.org/extension/19/user-themes/) 
 ## Dependencies:
  * NPM
  * Sass
