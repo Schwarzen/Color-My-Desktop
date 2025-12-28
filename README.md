@@ -19,7 +19,7 @@ A simple cli tool for changing the colors of the gnome-shell and gtk apps on GNO
 
 ```
 git clone https://github.com/Schwarzen/Color-My-Gnome.git
-cd /Color-My-Gnome
+cd Color-My-Gnome
 make install 
 ```
 
