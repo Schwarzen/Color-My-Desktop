@@ -1,7 +1,7 @@
 # Color-My-GNOME
 A simple cli tool for changing the colors of the gnome-shell and gtk apps on GNOME
 
-![output](https://github.com/user-attachments/assets/c8d13075-4571-4e77-8eb8-7a46b6ff5945)
+<img src="https://github.com/user-attachments/assets/c8d13075-4571-4e77-8eb8-7a46b6ff5945" width="50%"/>
 
 
 ## Requriements:
