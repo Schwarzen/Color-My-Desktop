@@ -1,11 +1,25 @@
 #!/bin/bash
 
 TARGET_DIR="$HOME/.local/share/Color-My-Gnome/scss"
+# Set your default values here
+DEF_P="#3584e4"   # GNOME Blue
+DEF_S="#241f31" # Dark Gray
+DEF_T="#1e1e1e"  # Deep Black
+DEF_TXT="#f9f9f9"      # White
+main_scss="gnome-shell.scss"
+temp_scss=$(mktemp --suffix=".scss")
 
-# Create it if it doesn't exist yet, then move inside
-mkdir -p "$TARGET_DIR"
-cd "$TARGET_DIR" || { echo "Failed to enter $TARGET_DIR"; exit 1; }
+gtk4_scss="gtk4.scss"
+output_css="$HOME/.local/share/themes/Color-My-Gnome/gnome-shell/gnome-shell.css"
+output_gtk4_css="$HOME/.config/gtk-4.0/gtk.css"
+output_gtk4dark_css="$HOME/.config/gtk-4.0/gtk-dark.css"
+SCSS_DIR="$HOME/.local/share/Color-My-Gnome/scss"
+# ---------------------
 
+get_val() {
+    # Looks for "$variable: value;" and returns just the value
+    grep "\$$1:" "$partial_file" | sed "s/.*\$$1: \(.*\);/\1/"
+}
 
 show_color() {
     local hex=${1#\#} # Remove the '#' if present
@@ -18,78 +32,8 @@ show_color() {
     printf "\e[48;2;%d;%d;%dm  \e[0m #%s\n" "$r" "$g" "$b" "$hex"
 }
 
-
-
-main_scss="gnome-shell.scss"
-gtk4_scss="gtk4.scss"
-output_css="$HOME/.local/share/themes/Color-My-Gnome/gnome-shell/gnome-shell.css"
-output_gtk4_css="$HOME/.config/gtk-4.0/gtk.css"
-output_gtk4dark_css="$HOME/.config/gtk-4.0/gtk-dark.css"
-SCSS_DIR="$HOME/.local/share/Color-My-Gnome/scss"
-
-# Set your default values here
-DEF_PRIMARY="#3584e4"   # GNOME Blue
-DEF_SECONDARY="#241f31" # Dark Gray
-DEF_TERTIARY="#1e1e1e"  # Deep Black
-DEF_TEXT="#f9f9f9"      # White
-# ---------------------
-
-echo "Select an option:"
-echo "1) Create a NEW color profile"
-echo "2) Use an EXISTING profile"
-read -p "Selection [1-2]: " choice
-
-
-if [ "$choice" == "1" ]; then
-
-#  Prompt for names
-read -p "Enter NEW color profile name (e.g., light blue): " filename
-
-
-#  Format partial filename
-clean_name=$(echo "$filename" | sed 's/^_//;s/\.scss$//')
-partial_file="_${clean_name}.scss"
-
-
-
-#  Prompt for variables
-CONFIRMED=false
-
-while [ "$CONFIRMED" = false ]; do
-echo "-----------------------------------------------"
-printf "set primary color or leave blank for default #3584e4 - GNOME Blue %s\n"
-read -p "\$primary: " primary
-primary=${primary:-$DEF_PRIMARY}
-printf "set secondary color or leave blank for default #241f31 - Dark Gray %s\n"
-read -p "\$secondary: " secondary
-secondary=${secondary:-$DEF_SECONDARY}
-printf "set tertiary color or leave blank for default #1e1e1e - Deep Black %s\n"
-read -p "\$tertiary: " tertiary
-tertiary=${tertiary:-$DEF_TERTIARY}
-printf "set text color or leave blank for default #f9f9f9 - White %s\n"
-read -p "\$text: " text
-text=${text:-$DEF_TEXT}
-
-echo "-----------------------------------------------"
-echo "Theme Summary:"
-echo -n "Primary:   " && show_color "$primary"
-echo -n "Secondary: " && show_color "$secondary"
-echo -n "Tertiary:  " && show_color "$tertiary"
-echo -n "Text:      " && show_color "$text"
-echo "-----------------------------------------------"
-
-read -p "Are you happy with these colors? (y/n): " confirm_choice
-    
-    if [[ "$confirm_choice" =~ ^[Yy]$ ]]; then
-        CONFIRMED=true
-    else
-        echo -e "\nStarting over..."
-        # Optional: clear the screen to keep it clean
-        # clear 
-    fi
-done
-
-read -p "Apply global transparency to background elements? (y/n): " trans_choice
+custom_top_bar_logic() {
+   read -p "Apply global transparency to background elements? (y/n): " trans_choice
 
 if [[ "$trans_choice" =~ ^[Yy]$ ]]; then
     read -p "Enter alpha value (0.0 to 1.0, e.g., 0.5): " alpha
@@ -117,14 +61,14 @@ if [ "$APPLY_TRANS" = true ]; then
     for var in "primary" "secondary" "tertiary"; do
         # regex: replace ' $var' with ' rgba($var, alpha)' 
         # but skip if it preceded by 'rgba('
-        sed -i "/BAR_TARGET/! s/\([^a(]\)\$$var/\1rgba(\$$var, $alpha)/g" "$main_scss"
+        sed -i "/BAR_TARGET/! s/\([^a(]\)\$$var/\1rgba(\$$var, $alpha)/g" "$temp_scss"
     done
     
     echo "Transparency applied."
 else
     # CLEANUP: If user chose NO, we should revert rgba($var, x) back to $var
     for var in "primary" "secondary" "tertiary" "topbar-color" "clock-color"; do
-        sed -i "s/rgba(\$$var, [0-9.]*)/\$$var/g" "$main_scss"
+        sed -i "s/rgba(\$$var, [0-9.]*)/\$$var/g" "$temp_scss"
     done
 fi
 
@@ -165,17 +109,17 @@ fi
 
 #  Handle TOPBAR Color Replacement in main.scss
 if [ "$USE_CUSTOM_TOPBAR" = true ]; then
-    # Replace $text with $topbar-color on the line containing the BAR_TARGET comment
-    sed -i '/BAR_TARGET/s/\$primary/\$topbar-color/' "$main_scss"
+    # Replace $primaryt with $topbar-color on the line containing the BAR_TARGET comment
+    sed -i '/BAR_TARGET/s/\$primary/\$topbar-color/' "$temp_scss"
     echo "Top Bar set to custom variable."
 else
-    # Revert to $text if user chose 'no'
-    sed -i '/BAR_TARGET/s/\$topbar-color/\$primary/' "$main_scss"
-    echo "Top Bar color reverted to default secondary color."
+    # Revert to $primary if user chose 'no'
+    sed -i '/BAR_TARGET/s/\$topbar-color/\$primary/' "$temp_scss"
+    echo "Top Bar color reverted to default primary color."
 fi
 
 # New prompt for clock color
-clock_val="\$secondary"
+clock_val="\$text"
 read -p "Use a specific color for the Top Bars Date and Time / icons? (y/n): " clock_choice
 
 if [[ "$clock_choice" =~ ^[Yy]$ ]]; then
@@ -194,7 +138,7 @@ if [[ "$clock_choice" =~ ^[Yy]$ ]]; then
         3) clock_val="\$tertiary" ;;
         4) clock_val="\$text" ;;
         5) read -p "Enter custom value: " custom_input ;;
-        *) echo "Invalid choice, defaulting to \$text"; clock_val="\$secondary" ;;
+        *) echo "Invalid choice, defaulting to \$text"; clock_val="\$text" ;;
     esac
     
 
@@ -209,30 +153,81 @@ fi
 #  Handle Clock Color Replacement in main.scss
 if [ "$USE_CUSTOM_CLOCK" = true ]; then
     # Replace $text with $clock-color on the line containing the TIME_TARGET comment
-    sed -i '/TIME_TARGET/s/\$secondary/\$clock-color/' "$main_scss"
+    sed -i '/TIME_TARGET/s/\$text/\$clock-color/' "$temp_scss"
     echo "Clock color set to custom variable."
 else
     # Revert to $text if user chose 'no'
-    sed -i '/TIME_TARGET/s/\$clock-color/\$secondary/' "$main_scss"
-    echo "Clock color reverted to default secondary color."
+    sed -i '/TIME_TARGET/s/\$clock-color/\$text/' "$temp_scss"
+    echo "Clock color reverted to default Text color."
 fi
+}
+
+configure_theme() {
+    CONFIRMED=false
+    while [ "$CONFIRMED" = false ]; do
+        echo "--- Theme Configuration ---"
+        read -p "Primary [$DEF_P]: " ip && primary=${ip:-$DEF_P}
+        read -p "Secondary [$DEF_S]: " is && secondary=${is:-$DEF_S}
+        read -p "Tertiary [$DEF_T]: " it && tertiary=${it:-$DEF_T}
+        read -p "Text [$DEF_TXT]: " itxt && text=${itxt:-$DEF_TXT}
+
+        # Show Summary (assuming show_color is also a function)
+        echo -e "\n--- THEME SUMMARY ---"
+        echo -n "Primary:   " && show_color "$primary"
+        echo -n "Secondary: " && show_color "$secondary"
+        echo -n "Tertiary:  " && show_color "$tertiary"
+        echo -n "Text:      " && show_color "$text"
+        
+        # Confirmation
+        read -p "Happy with these? (y/n): " c && [[ "$c" =~ ^[Yy]$ ]] && CONFIRMED=true
+    done
+
+    # After colors are confirmed, run your extra customization checks
+    custom_top_bar_logic
+
+    #  Create partial file
+    printf "%s\n\$primary: %s;\n\$secondary: %s;\n\$tertiary: %s;\n\$text: %s;\n\$tertiary-light: rgba(\$tertiary, 0.25);
+     \n\$text-light: rgba(\$text, 0.25);\n\$topbar-color: %s;\n\$clock-color: %s;\n" \
+	   "$trans_flag" "$primary" "$secondary" "$tertiary" "$text" "$topbar_val" "$clock_val" > "$partial_file"
+    echo "saved changes to partial file"
+}
+
+# Create dir
+mkdir -p "$TARGET_DIR"
+cd "$TARGET_DIR" || { echo "Failed to enter $TARGET_DIR"; exit 1; }
+
+cp "$main_scss" "$temp_scss"
+
+
+# --- OPTION 1: CREATE NEW ---
+echo "Select an option:"
+echo "1) Create a NEW color profile"
+echo "2) Use an EXISTING profile"
+read -p "Selection [1-2]: " choice
+
+if [ "$choice" == "1" ]; then
+
+#  Prompt for names
+    read -p "Enter NEW color profile name (e.g., light blue): " filename
+    #  Format partial filename
+    clean_name=$(echo "$filename" | sed 's/^_//;s/\.scss$//')
+    partial_file="_${clean_name}.scss"
+
+    configure_theme
 
 
 
-
-#  Create partial file
-printf "%s\n\$primary: %s;\n\$secondary: %s;\n\$tertiary: %s;\n\$text: %s;\n\$tertiary-light: rgba(\$tertiary, 0.25);\n\$text-light: rgba(\$text, 0.25);\n\$topbar-color: %s;\n\$clock-color: %s;\n" \
-    "$trans_flag" "$primary" "$secondary" "$tertiary" "$text" "$topbar_val" "$clock_val" > "$partial_file"
 
 
 selected_import="$clean_name"
 
+
+
+ # --- OPTION 2: SELECT EXISTING ---
 elif [ "$choice" == "2" ]; then
 
+     
 
-
-
-    # --- OPTION 2: SELECT EXISTING ---
     echo "Available profiles in $SCSS_DIR:"
     # List files, removing underscore and extension for the display
     files=($(ls "$SCSS_DIR" | grep '^_.*\.scss$' | sed 's/^_//;s/\.scss$//'))
@@ -251,12 +246,39 @@ elif [ "$choice" == "2" ]; then
     if [ -z "$selected_import" ]; then
         echo "Invalid selection." && exit 1
     fi
-else
-    echo "Invalid choice." && exit 1
+    selected_import="${files[$((file_num-1))]}"
+    partial_file="_${selected_import}.scss"
+
+    read -p "Would you like to edit '$selected_import' before applying? (y/n): " edit_choice
+    if [[ "$edit_choice" =~ ^[Yy]$ ]]; then
+        # Extract current values to use as new defaults
+        DEF_P=$(get_val "primary")
+        DEF_S=$(get_val "secondary")
+        DEF_T=$(get_val "tertiary")
+        DEF_TXT=$(get_val "text")
+
+	 # Load transparency defaults from the header
+        flag_line=$(grep "TRANSPARENT:" "$partial_file")
+        if [[ "$flag_line" == *"true"* ]]; then
+            DEF_TRANS="y"
+            DEF_ALPHA=$(echo "$flag_line" | sed 's/.*(\([0-9.]*\)).*/\1/')
+        fi
+        
+        configure_theme
+
+	# Update selected_import in case configure_theme changed the filename
+        # (though usually edits keep the same name)
+        selected_import=$(echo "$partial_file" | sed 's/^_//;s/\.scss$//')
+    fi
+
+   else
+    echo "Invalid menu choice." && exit 1
 fi
 
-   partial_file="_${selected_import}.scss" 
+  
 
+
+   
 # --- Auto-Detect Transparency from Partial ---
 # Look for the // TRANSPARENT: line in the chosen partial
 flag_line=$(grep "TRANSPARENT:" "$partial_file")
@@ -275,14 +297,14 @@ fi
 
 #  ALWAYS Cleanup first to avoid double-wrapping
 for var in "primary" "secondary" "tertiary" "topbar-color" "clock-color"; do
-    sed -i "s/rgba(\$$var, [0-9.]*)/\$$var/g" "$main_scss"
+    sed -i "s/rgba(\$$var, [0-9.]*)/\$$var/g" "$temp_scss"
 done
 
 # 2. Re-apply only if the flag was true
 if [ "$APPLY_TRANS" = true ]; then
     for var in "primary" "secondary" "tertiary" "topbar-color" "clock-color"; do
         # Skip lines with BAR_TARGET
-        sed -i "/BAR_TARGET/! s/\([^a(]\)\$$var/\1rgba(\$$var, $alpha)/g" "$main_scss"
+        sed -i "/BAR_TARGET/! s/\([^a(]\)\$$var/\1rgba(\$$var, $alpha)/g" "$temp_scss"
     done
     echo "Main stylesheet synchronized with transparent partial."
 else
@@ -294,12 +316,12 @@ fi
 #  Clean existing imports and add new one
 import_statement="@use '$HOME/.local/share/Color-My-Gnome/scss/$selected_import' as *;"
 
-if [ -f "$main_scss" ]; then
+if [ -f "$temp_scss" ]; then
     # Delete any line that starts with @import, regardless of the filename
-    sed -i '/^@use/d' "$main_scss"
-    echo "Removed previous @use statements from $main_scss."
+    sed -i '/^@use/d' "$temp_scss"
+    echo "Removed previous @use statements from $temp_scss."
 else
-    touch "$main_scss"
+    touch "$temp_scss"
 fi
 
 if [ -f "$gtk4_scss" ]; then
@@ -311,15 +333,15 @@ else
 fi
 
 # Append the new import at the top of the file
-echo "$import_statement" | cat - "$main_scss" > temp && mv temp "$main_scss"
+echo "$import_statement" | cat - "$temp_scss" > temp && mv temp "$temp_scss"
 
 echo "$import_statement" | cat - "$gtk4_scss" > temp && mv temp "$gtk4_scss"
 
 #  Compile SCSS to CSS
 echo "-----------------------------------------------"
 if command -v npx sass &> /dev/null; then
-    echo "Compiling $main_scss to $output_css..."
-    npx sass "$main_scss" "$output_css" --style expanded
+    echo "Compiling $temp_scss to $output_css..."
+    npx sass "$temp_scss" "$output_css" --style expanded
     echo "Compiling to $output_gtk4_css"
     npx sass "$gtk4_scss" "$output_gtk4_css" --style expanded
        echo "Compiling to $output_gtk4dark_css"
@@ -329,4 +351,6 @@ else
     echo "Error: 'sass' compiler not found. Install with: npm install -g sass"
 fi
 
+# Remove temp file
+rm "$temp_scss"
 
