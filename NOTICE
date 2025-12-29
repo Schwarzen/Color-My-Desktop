@@ -30,10 +30,11 @@ ORIGIN: GNOME Shell Resources
 LICENSE: GNU LGPL 2.1
 
 The following files are included from the GNOME project:
-- calendar-today.svg, calendar-today-light.svg, pad-osd.css
+- calendar-today.svg, calendar-today-light.svg, pad-osd.css,
+workspace-placeholder.svg, gnome-shell-start.svg.
 
 These specific assets remain under the GNU Lesser General Public 
 License v2.1. A copy of this license can be found in the 
-'licenses/LGPL-2.1' directory. workspace-placeholder.svg,
+'licenses/LGPL-2.1' directory.
 
 -------------------------------------------------------------------
