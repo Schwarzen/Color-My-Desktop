@@ -1,4 +1,4 @@
-@use 'yellow' as *;
+@use 'yellow2' as *;
 
 /*
  * Copyright 2025 Schwarzen
@@ -1804,7 +1804,7 @@ StScrollBar {
 
 /* Top Bar */
 #panel {
-  background-color: $primary; /* BAR TARGET */
+  background-color: $primary; /* BAR_TARGET */
   font-weight: bold;
   height: 2.2em;
   transition-duration: 250ms;
@@ -1815,7 +1815,7 @@ StScrollBar {
     background-color: transparent;
     border-radius: 999px;
     font-weight: bold;
-    color: $text; /* top bar button color */ /* TIME TARGET */
+    color: $text; /* top bar button color */ /* TIME_TARGET */
     box-shadow: inset 0 0 0 100px transparent;
     -natural-hpadding: 12px;
     -minimum-hpadding: 6px; }
@@ -1879,7 +1879,7 @@ StScrollBar {
       background-color: transparent;
       border-radius: 999px;
       font-weight: bold;
-      color: $text; /* top bar date & time */ /* TIME TARGET */
+      color: $text; /* top bar date & time */ /* TIME_TARGET */
       box-shadow: inset 0 0 0 100px transparent;
       background: none !important;
       box-shadow: none !important;
