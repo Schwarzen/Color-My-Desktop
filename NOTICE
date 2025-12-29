@@ -1,0 +1,39 @@
+Apache Color-My-Gnome
+Copyright 2025 Schwarzen
+
+This product includes software developed by Schwarzen and targets 
+the GNOME Shell environment.
+
+-------------------------------------------------------------------
+COMPONENT: CSS System Skeleton
+ORIGIN: Derived from gnome-shell.css (GNOME Shell)
+ORIGINAL AUTHORS: Copyright 2009, 2015 Red Hat, Inc. and Intel Corp.
+LICENSE: GNU LGPL 2.1 (Original Structure) / Apache 2.0 (New Values)
+
+This project’s CSS files are built upon a structural skeleton extracted 
+from GNOME Shell. While the specific creative property values (colors, 
+fonts, etc.) are original works licensed under Apache 2.0, the 
+functional arrangement and identifiers are derived from the original 
+LGPL 2.1 source. 
+
+The CSS files in this project use functional identifiers (class names 
+and IDs) originally found in the GNOME Shell default theme (Copyright 
+Red Hat, Inc. and Intel Corporation). 
+
+These identifiers are used solely for interoperability to interface 
+with the GNOME Shell UI. All creative property values (colors, 
+spacing, etc.) are original works of Schwarzen and are licensed 
+under the Apache License 2.0.
+-------------------------------------------------------------------
+COMPONENT: SVG Assets
+ORIGIN: GNOME Shell Resources
+LICENSE: GNU LGPL 2.1
+
+The following files are included from the GNOME project:
+- calendar-today.svg, calendar-today-light.svg, pad-osd.css
+
+These specific assets remain under the GNU Lesser General Public 
+License v2.1. A copy of this license can be found in the 
+'licenses/LGPL-2.1' directory. workspace-placeholder.svg,
+
+-------------------------------------------------------------------
