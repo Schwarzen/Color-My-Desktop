@@ -23,7 +23,7 @@ cd Color-My-Gnome
 make install 
 ```
 
-Color My GNOME installs into ~/.local/bin which may not be automatically included in the PATH of some distrobutions like Arch linux,<br>
+Color My GNOME installs into ~/.local/bin which may not be automatically included in the PATH of some distributions like Arch linux,<br>
 please add `export PATH="$HOME/.local/bin:$PATH"`<br>
 to your .bashrc and run <br>
 `. ~/.bashrc`<br>
