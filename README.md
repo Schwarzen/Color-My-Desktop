@@ -1,5 +1,5 @@
 # Color-My-GNOME
-A simple cli tool for changing the colors of the gnome-shell and gtk apps on GNOME
+A simple cli tool for creating custom colored gnome-shell and GTK app themes, allowing for easy customization of the system colors of the gnome-shell and gtk apps on GNOME
 
 <img src="https://github.com/user-attachments/assets/c8d13075-4571-4e77-8eb8-7a46b6ff5945" width="50%"/>
 
