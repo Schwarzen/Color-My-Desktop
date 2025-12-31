@@ -24,6 +24,13 @@ output_vencord="$HOME/.config/vesktop/themes/vencord.theme.css"
 ZEN_BASE_MANUAL="$HOME/.zen"
 ZEN_BASE_FLATPAK="$HOME/.var/app/app.zen_browser.zen/zen"
 
+CSS_IMPORT_LINE="@import url(\"file://$HOME/.local/share/Color-My-Gnome/scss/youtube.css\");
+@-moz-document domain(youtube.com) {
+
+}"
+
+CSS_IMPORT_LINE2="@import url(\"file://$HOME/.local/share/Color-My-Gnome/scss/zen.css\");"
+
 DIRS=(
     "$ZEN_CHROME_DIR"
     "$HOME/.config/vesktop/theme"
@@ -420,6 +427,10 @@ if command -v npx sass &> /dev/null; then
             mkdir -p "$dir"
         fi
     done
+    printf "%s\n" "$CSS_IMPORT_LINE2" > "$ZEN_CHROME_DIR/userChrome.css"
+    printf "%s\n" "$CSS_IMPORT_LINE" > "$ZEN_CHROME_DIR/userContent.css"
+
+    echo "Created userChrome.css and userContent.css in $ZEN_CHROME_DIR"
         echo "Compiling YouTube styles..."
         npx sass "$youtube_scss" "$output_youtube" --style expanded
 	npx sass "$zen_scss" "$output_zen" --style expanded
