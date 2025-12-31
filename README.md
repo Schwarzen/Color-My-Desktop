@@ -69,8 +69,17 @@ Color My GNOME currently has these features: <br>
 Once the theme has finished compiling open the gnome tweaks application, and change your shell theme to "Color-My-Gnome" and enjoy!<br>
 Some apps may require logging out to refresh their colors. <br>
 
-Color my GNOME is currently under development, please backup any important files and use with caution. Color my GNOME only alters the files it comes with, <br>
+Color my GNOME is still being tested, please backup any important files and use with caution. Color my GNOME only alters the files it comes with, <br>
 and only creates files in the Zen-browser theme folder that reference the css files created by Color my GNOME.
+
+## Uninstall
+
+navigate to the directory where you cloned the files 
+
+ ```
+make uninstall
+make clean
+```
 ## Screenshots:
 
 <p align="center">
