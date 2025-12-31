@@ -35,7 +35,21 @@ DIRS=(
     "$ZEN_CHROME_DIR"
     "$HOME/.config/vesktop/theme"
 )
-# ---------------------
+
+GUI_ZEN_TOGGLE="$6"
+GUI_TRANS_TOGGLE="${11}"
+GUI_ALPHA_VAL="${12}"
+
+
+# --- METADATA (For the Partial File) ---
+if [ "$APPLY_TRANS" = true ]; then
+    trans_flag="// TRANSPARENT: true ($alpha)"
+else
+    trans_flag="// TRANSPARENT: false"
+fi
+ 
+
+# --------------------- Functions
 
 get_val() {
     # Looks for "$variable: value;" and returns just the value
@@ -54,13 +68,24 @@ show_color() {
 }
 
 custom_top_bar_logic() {
-   read -p "Apply global transparency to background elements? (y/n): " trans_choice
-
-if [[ "$trans_choice" =~ ^[Yy]$ ]]; then
-    read -p "Enter alpha value (0.0 to 1.0, e.g., 0.5): " alpha
-    APPLY_TRANS=true
+   
+if [ -n "$PROFILE_NAME" ]; then
+    # --- MODE: GUI (Python) ---
+    if [ "$GUI_TRANS_TOGGLE" -eq 1 ]; then
+        APPLY_TRANS=true
+        alpha="${GUI_ALPHA_VAL:-0.8}"
+    else
+        APPLY_TRANS=false
+    fi
 else
-    APPLY_TRANS=false
+    # --- MODE: TERMINAL (Manual) ---
+    read -p "Apply global transparency? (y/n): " trans_choice
+    if [[ "$trans_choice" =~ ^[Yy]$ ]]; then
+        read -p "Enter alpha value (0.0 to 1.0, e.g., 0.5): " alpha
+        APPLY_TRANS=true
+    else
+        APPLY_TRANS=false
+    fi
 fi
 
 # Save the transparency status into a comment at the top of the partial
@@ -87,7 +112,7 @@ if [ "$APPLY_TRANS" = true ]; then
     
     echo "Transparency applied."
 else
-    # CLEANUP: If user chose NO, we should revert rgba($var, x) back to $var
+    # CLEANUP: If user chose NO, revert rgba($var, x) back to $var
     for var in "primary" "secondary" "tertiary" "topbar-color" "clock-color"; do
         sed -i "s/rgba(\$$var, [0-9.]*)/\$$var/g" "$temp_scss"
     done
@@ -95,7 +120,24 @@ fi
 
 
 # New prompt for Top Bar color
-topbar_val="\$primary"
+    # Capture arguments passed from the main script call
+    # $1 was $7 (Toggle), $2 was $8 (Color Value)
+    local gui_toggle="$1"
+    local gui_value="$2"
+
+    #  HANDLE THE TOGGLE (USE_CUSTOM_TOPBAR)
+if [ -n "$gui_toggle" ]; then
+      
+        if [ "$gui_toggle" -eq 1 ]; then
+    
+            USE_CUSTOM_TOPBAR=true
+            topbar_val="$gui_value"
+        else
+            USE_CUSTOM_TOPBAR=false
+        fi
+      
+    else
+
 read -p "Use a specific background color/transparency for the Top Bar (y/n): " topbar_choice
 
 if [[ "$topbar_choice" =~ ^[Yy]$ ]]; then
@@ -128,6 +170,8 @@ else
     USE_CUSTOM_TOPBAR=false
 fi
 
+fi
+
 #  Handle TOPBAR Color Replacement in main.scss
 if [ "$USE_CUSTOM_TOPBAR" = true ]; then
     # Replace $primaryt with $topbar-color on the line containing the BAR_TARGET comment
@@ -140,7 +184,26 @@ else
 fi
 
 # New prompt for clock color
-clock_val="\$text"
+
+    # Capture arguments passed from the main script call
+    # $3 was 9 (Toggle), $4 was $10 (Color Value)
+    local clock_toggle="$3"
+    local clock_value="$4"
+
+if [ -n "$clock_toggle" ]; then
+        # ---  RUNNING FROM GUI ---
+        if [ "$clock_toggle" -eq 1 ]; then
+            USE_CUSTOM_CLOCK=true
+            clock_val="$clock_value"
+        else
+            USE_CUSTOM_CLOCK=false
+        fi
+     
+    else
+
+ 
+  
+   
 read -p "Use a specific color for the Top Bars Date and Time / icons? (y/n): " clock_choice
 
 if [[ "$clock_choice" =~ ^[Yy]$ ]]; then
@@ -171,6 +234,8 @@ else
     USE_CUSTOM_CLOCK=false
 fi
 
+fi
+
 #  Handle Clock Color Replacement in main.scss
 if [ "$USE_CUSTOM_CLOCK" = true ]; then
     # Replace $text with $clock-color on the line containing the TIME_TARGET comment
@@ -183,28 +248,43 @@ else
 fi
 }
 
+
 configure_theme() {
-    CONFIRMED=false
-    while [ "$CONFIRMED" = false ]; do
-        echo "--- Theme Configuration ---"
-        read -p "Primary [$DEF_P]: " ip && primary=${ip:-$DEF_P}
-        read -p "Secondary [$DEF_S]: " is && secondary=${is:-$DEF_S}
-        read -p "Tertiary [$DEF_T]: " it && tertiary=${it:-$DEF_T}
-        read -p "Text [$DEF_TXT]: " itxt && text=${itxt:-$DEF_TXT}
+    #  Capture Arguments from Python/CLI
 
-        # Show Summary (assuming show_color is also a function)
-        echo -e "\n--- THEME SUMMARY ---"
-        echo -n "Primary:   " && show_color "$primary"
-        echo -n "Secondary: " && show_color "$secondary"
-        echo -n "Tertiary:  " && show_color "$tertiary"
-        echo -n "Text:      " && show_color "$text"
-        
-        # Confirmation
-        read -p "Happy with these? (y/n): " c && [[ "$c" =~ ^[Yy]$ ]] && CONFIRMED=true
-    done
+    profile_name="$1"
+    primary="$2"
+    secondary="$3"
+    tertiary="$4"
+    text="$5"
 
-    # After colors are confirmed, run your extra customization checks
-    custom_top_bar_logic
+ # Check if a profile name was provided via arguments
+    if [ -n "$profile_name" ]; then
+        echo "Arguments detected. Applying theme: $profile_name"
+    
+        CONFIRMED=true
+    else
+        # If no arguments, run the interactive terminal loop
+        CONFIRMED=false
+        while [ "$CONFIRMED" = false ]; do
+            echo "--- Theme Configuration ---"
+            read -p "Primary [$DEF_P]: " ip && primary=${ip:-$DEF_P}
+            read -p "Secondary [$DEF_S]: " is && secondary=${is:-$DEF_S}
+            read -p "Tertiary [$DEF_T]: " it && tertiary=${it:-$DEF_T}
+            read -p "Text [$DEF_TXT]: " itxt && text=${itxt:-$DEF_TXT}
+
+            echo -e "\n--- THEME SUMMARY ---"
+            echo -n "Primary:   " && show_color "$primary"
+            echo -n "Secondary: " && show_color "$secondary"
+            echo -n "Tertiary:  " && show_color "$tertiary"
+            echo -n "Text:      " && show_color "$text"
+            
+            read -p "Happy with these? (y/n): " c && [[ "$c" =~ ^[Yy]$ ]] && CONFIRMED=true
+        done
+    fi
+
+   
+    custom_top_bar_logic "$7" "$8" "$9" "${10}"
 
     #  Create partial file
     printf "%s\n\$primary: %s;\n\$secondary: %s;\n\$tertiary: %s;\n\$text: %s;\n\$tertiary-light: rgba(\$tertiary, 0.25);
@@ -219,32 +299,39 @@ cd "$TARGET_DIR" || { echo "Failed to enter $TARGET_DIR"; exit 1; }
 
 cp "$main_scss" "$temp_scss"
 
+PROFILE_NAME="$1"
 
-# --- OPTION 1: CREATE NEW ---
-echo "Select an option:"
-echo "1) Create a NEW color profile"
-echo "2) Use an EXISTING profile"
-read -p "Selection [1-2]: " choice
+# --- Option 1: CREATE NEW ---
+if [ -z "$PROFILE_NAME" ]; then
+    echo "Select an option:"
+    echo "1) Create a NEW color profile"
+    echo "2) Use an EXISTING profile"
+    read -p "Selection [1-2]: " choice
+else
+  
+    choice="1"
+
+fi
 
 if [ "$choice" == "1" ]; then
 
-#  Prompt for names
-    read -p "Enter NEW color profile name (e.g., light blue): " filename
+    #  Prompt for names
+    if [ -z "$PROFILE_NAME" ]; then
+	read -p "Enter NEW color profile name (e.g., light blue): " filename
+	fi
     #  Format partial filename
     clean_name=$(echo "$filename" | sed 's/^_//;s/\.scss$//')
     partial_file="_${clean_name}.scss"
 
-    configure_theme
-
-
-
-
+    configure_theme "$@"
 
 selected_import="$clean_name"
 
 
 
- # --- OPTION 2: SELECT EXISTING ---
+# --- OPTION 2: SELECT EXISTING ---
+
+
 elif [ "$choice" == "2" ]; then
 
      
@@ -288,7 +375,7 @@ elif [ "$choice" == "2" ]; then
         configure_theme
 
 	# Update selected_import in case configure_theme changed the filename
-        # (though usually edits keep the same name)
+      
         selected_import=$(echo "$partial_file" | sed 's/^_//;s/\.scss$//')
     fi
 
@@ -316,7 +403,7 @@ else
     echo "Partial: Solid Colors Detected"
 fi
 
-#  ALWAYS Cleanup first to avoid double-wrapping
+
 for var in "primary" "secondary" "tertiary" "topbar-color" "clock-color"; do
     sed -i "s/rgba(\$$var, [0-9.]*)/\$$var/g" "$temp_scss"
 done
@@ -389,8 +476,20 @@ echo "$import_statement" | cat - "$zen_scss" > temp && mv temp "$zen_scss"
 echo "$import_statement" | cat - "$vencord_scss" > temp && mv temp "$vencord_scss"
 
 #  Compile SCSS to CSS
-echo "-----------------------------------------------"
-read -p "Would you like to apply the Zen Browser, Vesktop and YouTube style? (y/n): " apply_youtube
+
+# 1. Determine zen toggle
+if [ -n "$PROFILE_NAME" ]; then
+    # --- GUI MODE ---
+    if [ "$GUI_ZEN_TOGGLE" == "1" ]; then
+        apply_youtube="y"
+    else
+        apply_youtube="n"
+    fi
+else
+
+    read -p "Would you like to apply the Zen Browser, Vesktop and YouTube style? (y/n): " apply_youtube
+
+    fi
 
 if command -v npx sass &> /dev/null; then
     
@@ -418,7 +517,6 @@ if command -v npx sass &> /dev/null; then
     echo "Detected Zen Chrome Directory: $ZEN_CHROME_DIR"
 
     #  ADD the detected path to your DIRS array
-    # This ensures the loop actually sees the folder you just found
     DIRS+=("$ZEN_CHROME_DIR")
 
     #   Create the folders
