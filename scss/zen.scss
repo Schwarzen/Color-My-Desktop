@@ -1,0 +1,12 @@
+@use '' as *;
+:root {
+    --zen-colors-primary: #{$primary} !important; /* Your SASS variable */
+    --zen-main-browser-background: #{$primary} !important;
+    --zen-color-brand-primary: #{$secondary} !important;
+    --zen-container-bg: #{$secondary} !important;    
+}
+
+
+#zen-sidebar-box {
+    background-color: #{$primary} !important;
+}

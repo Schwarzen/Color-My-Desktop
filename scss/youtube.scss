@@ -1,0 +1,30 @@
+@use '' as *;
+canvas {
+    background-color: $primary; /* Standard CSS property - usually works fine */
+}
+
+  yt-formatted-string, 
+    span:not(.ytp-time-current):not(.ytp-time-duration), 
+    div#contentText, 
+    #video-title,
+    h1, h2, h3 {
+        color: #{$text} !important;
+    }
+
+:root, html[dark], [dark] {
+  --yt-spec-base-background: #{$secondary} !important;
+  --yt-spec-raised-background: #{$primary} !important;
+  --yt-spec-menu-background: #{$primary} !important;
+  --yt-frosted-glass-desktop: #{$primary} !important;
+  --yt-spec-frosted-glass-desktop: #{$primary} !important;
+  --yt-spec-text-primary: #{$text} !important;
+  --yt-spec-text-secondary: #{$text} !important;
+  --yt-spec-text-disabled: #{$tertiary} !important;
+  --yt-spec-call-to-action: #{$text} !important;
+}
+
+ytd-mini-guide-renderer.style-scope.ytd-app {
+    background-color: #{$primary} !important;
+    border-right: 1px solid #{$secondary} !important;
+}
+

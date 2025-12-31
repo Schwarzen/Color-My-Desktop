@@ -14,6 +14,20 @@ output_css="$HOME/.local/share/themes/Color-My-Gnome/gnome-shell/gnome-shell.css
 output_gtk4_css="$HOME/.config/gtk-4.0/gtk.css"
 output_gtk4dark_css="$HOME/.config/gtk-4.0/gtk-dark.css"
 SCSS_DIR="$HOME/.local/share/Color-My-Gnome/scss"
+youtube_scss="$HOME/.local/share/Color-My-Gnome/scss/youtube.scss"
+output_youtube="$HOME/.local/share/Color-My-Gnome/scss/youtube.css"
+zen_scss="$HOME/.local/share/Color-My-Gnome/scss/zen.scss"
+output_zen="$HOME/.local/share/Color-My-Gnome/scss/zen.css"
+vencord_scss="$HOME/.local/share/Color-My-Gnome/scss/vencord.theme.scss"
+output_vencord="$HOME/.config/vesktop/themes/vencord.theme.css"
+
+ZEN_BASE_MANUAL="$HOME/.zen"
+ZEN_BASE_FLATPAK="$HOME/.var/app/app.zen_browser.zen/zen"
+
+DIRS=(
+    "$ZEN_CHROME_DIR"
+    "$HOME/.config/vesktop/theme"
+)
 # ---------------------
 
 get_val() {
@@ -332,20 +346,97 @@ else
     touch "$gtk4_scss"
 fi
 
+if [ -f "$youtube_scss" ]; then
+    # Delete any line that starts with @import, regardless of the filename
+    sed -i '/^@use/d' "$youtube_scss"
+    echo "Removed previous @use statements from $youtube_scss."
+else
+    touch "$youtube_scss"
+fi
+
+if [ -f "$zen_scss" ]; then
+    # Delete any line that starts with @import, regardless of the filename
+    sed -i '/^@use/d' "$zen_scss"
+    echo "Removed previous @use statements from $zen_scss."
+else
+    touch "$zen_scss"
+fi
+
+if [ -f "$zen_scss" ]; then
+    # Delete any line that starts with @import, regardless of the filename
+    sed -i '/^@use/d' "$vencord_scss"
+    echo "Removed previous @use statements from $vencord_scss."
+else
+    touch "$vencord_scss"
+fi
+
 # Append the new import at the top of the file
 echo "$import_statement" | cat - "$temp_scss" > temp && mv temp "$temp_scss"
 
 echo "$import_statement" | cat - "$gtk4_scss" > temp && mv temp "$gtk4_scss"
 
+echo "$import_statement" | cat - "$youtube_scss" > temp && mv temp "$youtube_scss"
+
+echo "$import_statement" | cat - "$zen_scss" > temp && mv temp "$zen_scss"
+
+echo "$import_statement" | cat - "$vencord_scss" > temp && mv temp "$vencord_scss"
+
 #  Compile SCSS to CSS
 echo "-----------------------------------------------"
+read -p "Would you like to apply the Zen Browser, Vesktop and YouTube style? (y/n): " apply_youtube
+
 if command -v npx sass &> /dev/null; then
+    
+    #  Compile YouTube CSS if user said 'y'
+    if [[ "$apply_youtube" =~ ^[Yy]$ ]]; then
+	echo "Checking for Zen Browser profiles..."
+    if [ -d "$ZEN_BASE_FLATPAK" ]; then
+        ZEN_BASE="$ZEN_BASE_FLATPAK"
+    elif [ -d "$ZEN_BASE_MANUAL" ]; then
+        ZEN_BASE="$ZEN_BASE_MANUAL"
+    else
+        echo "Zen Browser profile base directory not found."
+        exit 1
+    fi
+
+    REL_PATH=$(grep -m 1 "^Path=" "$ZEN_BASE/profiles.ini" | cut -d= -f2)
+
+    if [ -z "$REL_PATH" ]; then
+        echo "Could not determine the active Zen profile path."
+        exit 1
+    fi
+
+    #   Construct the path
+    ZEN_CHROME_DIR="$ZEN_BASE/$REL_PATH/chrome"
+    echo "Detected Zen Chrome Directory: $ZEN_CHROME_DIR"
+
+    #  ADD the detected path to your DIRS array
+    # This ensures the loop actually sees the folder you just found
+    DIRS+=("$ZEN_CHROME_DIR")
+
+    #   Create the folders
+    for dir in "${DIRS[@]}"; do
+        if [ -n "$dir" ]; then  # Extra safety check: only run if dir is not empty
+            mkdir -p "$dir"
+        fi
+    done
+        echo "Compiling YouTube styles..."
+        npx sass "$youtube_scss" "$output_youtube" --style expanded
+	npx sass "$zen_scss" "$output_zen" --style expanded
+	npx sass "$vencord_scss" "$output_vencord" --style expanded
+    else
+        echo "Skipping YouTube styles."
+    fi
+
+    #  Always compile Main and GTK styles
     echo "Compiling $temp_scss to $output_css..."
     npx sass "$temp_scss" "$output_css" --style expanded
-    echo "Compiling to $output_gtk4_css"
+    
+    echo "Compiling to $output_gtk4_css..."
     npx sass "$gtk4_scss" "$output_gtk4_css" --style expanded
-       echo "Compiling to $output_gtk4dark_css"
-       npx sass "$gtk4_scss" "$output_gtk4dark_css" --style expanded
+    
+    echo "Compiling to $output_gtk4dark_css..."
+    npx sass "$gtk4_scss" "$output_gtk4dark_css" --style expanded
        
 else
     echo "Error: 'sass' compiler not found. Install with: npm install -g sass"
