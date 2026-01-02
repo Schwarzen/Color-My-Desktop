@@ -36,9 +36,23 @@ DIRS=(
     "$HOME/.config/vesktop/theme"
 )
 
+# --- EXPLICIT ARGUMENT MAPPING ---
+GUI_NAME="$1"
+GUI_PRIMARY="$2"
+GUI_SECONDARY="$3"
+GUI_TERTIARY="$4"
+GUI_TEXT="$5"
 GUI_ZEN_TOGGLE="$6"
+GUI_TOPBAR_TOGGLE="$7"
+GUI_TOPBAR_HEX="$8"        # Check if this is truly the color
+GUI_CLOCK_TOGGLE="$9"
+GUI_CLOCK_HEX="${10}"      # Check if this is truly the color
 GUI_TRANS_TOGGLE="${11}"
-GUI_ALPHA_VAL="${12}"
+GUI_ALPHA="${12}"
+GUI_ICON_SYNC="${13}"
+
+
+
 
 
 # --- METADATA (For the Partial File) ---
@@ -135,6 +149,17 @@ if [ -n "$gui_toggle" ]; then
         else
             USE_CUSTOM_TOPBAR=false
         fi
+
+# --- HANDLE TOPBAR COLOR REPLACEMENT ---
+if [ "$USE_CUSTOM_TOPBAR" = true ]; then
+    # This finds the BAR_TARGET line and replaces ANY variable ($...) with $topbar-color
+    sed -i '/BAR_TARGET/s/\$[a-zA-Z0-9_-]*/\$topbar-color/' "$temp_scss"
+    echo "Top Bar set to custom variable."
+else
+    # This finds the BAR_TARGET line and replaces ANY variable ($...) with $primary
+    sed -i '/BAR_TARGET/s/\$[a-zA-Z0-9_-]*/\$primary/' "$temp_scss"
+    echo "Top Bar color reverted to default primary color."
+fi
       
     else
 
@@ -172,14 +197,14 @@ fi
 
 fi
 
-#  Handle TOPBAR Color Replacement in main.scss
+# --- HANDLE TOPBAR COLOR REPLACEMENT ---
 if [ "$USE_CUSTOM_TOPBAR" = true ]; then
-    # Replace $primaryt with $topbar-color on the line containing the BAR_TARGET comment
-    sed -i '/BAR_TARGET/s/\$primary/\$topbar-color/' "$temp_scss"
+    # This finds the BAR_TARGET line and replaces ANY variable ($...) with $topbar-color
+    sed -i '/BAR_TARGET/s/\$[a-zA-Z0-9_-]*/\$topbar-color/' "$temp_scss"
     echo "Top Bar set to custom variable."
 else
-    # Revert to $primary if user chose 'no'
-    sed -i '/BAR_TARGET/s/\$topbar-color/\$primary/' "$temp_scss"
+    # This finds the BAR_TARGET line and replaces ANY variable ($...) with $primary
+    sed -i '/BAR_TARGET/s/\$[a-zA-Z0-9_-]*/\$primary/' "$temp_scss"
     echo "Top Bar color reverted to default primary color."
 fi
 
@@ -198,6 +223,17 @@ if [ -n "$clock_toggle" ]; then
         else
             USE_CUSTOM_CLOCK=false
         fi
+
+# --- HANDLE CLOCK COLOR REPLACEMENT ---
+if [ "$USE_CUSTOM_TOPBAR" = true ]; then
+    # This finds the BAR_TARGET line and replaces ANY variable ($...) with $topbar-color
+    sed -i '/TIME_TARGET/s/\$[a-zA-Z0-9_-]*/\$clock-color/' "$temp_scss"
+    echo "Top Bar set to custom variable."
+else
+    # This finds the BAR_TARGET line and replaces ANY variable ($...) with $primary
+    sed -i '/TIME_TARGET/s/\$[a-zA-Z0-9_-]*/\$text/' "$temp_scss"
+    echo "Top Bar color reverted to default primary color."
+fi
      
     else
 
@@ -236,15 +272,15 @@ fi
 
 fi
 
-#  Handle Clock Color Replacement in main.scss
-if [ "$USE_CUSTOM_CLOCK" = true ]; then
-    # Replace $text with $clock-color on the line containing the TIME_TARGET comment
-    sed -i '/TIME_TARGET/s/\$text/\$clock-color/' "$temp_scss"
-    echo "Clock color set to custom variable."
+# --- HANDLE CLOCK COLOR REPLACEMENT ---
+if [ "$USE_CUSTOM_TOPBAR" = true ]; then
+    # This finds the BAR_TARGET line and replaces ANY variable ($...) with $topbar-color
+    sed -i '/TIME_TARGET/s/\$[a-zA-Z0-9_-]*/\$clock-color/' "$temp_scss"
+    echo "Top Bar set to custom variable."
 else
-    # Revert to $text if user chose 'no'
-    sed -i '/TIME_TARGET/s/\$clock-color/\$text/' "$temp_scss"
-    echo "Clock color reverted to default Text color."
+    # This finds the BAR_TARGET line and replaces ANY variable ($...) with $primary
+    sed -i '/TIME_TARGET/s/\$[a-zA-Z0-9_-]*/\$text/' "$temp_scss"
+    echo "Top Bar color reverted to default primary color."
 fi
 }
 
@@ -286,11 +322,16 @@ configure_theme() {
    
     custom_top_bar_logic "$7" "$8" "$9" "${10}"
 
+    if [ "$choice" != "1" ]; then
+
     #  Create partial file
     printf "%s\n\$primary: %s;\n\$secondary: %s;\n\$tertiary: %s;\n\$text: %s;\n\$tertiary-light: rgba(\$tertiary, 0.25);
      \n\$text-light: rgba(\$text, 0.25);\n\$topbar-color: %s;\n\$clock-color: %s;\n" \
 	   "$trans_flag" "$primary" "$secondary" "$tertiary" "$text" "$topbar_val" "$clock_val" > "$partial_file"
-    echo "saved changes to partial file"
+  echo "CLI Mode: Saved changes to new partial file."
+    else
+        echo "GUI Mode: Using pre-saved partial file from ThemeManager."
+    fi
 }
 
 # Create dir
@@ -314,16 +355,40 @@ else
 fi
 
 if [ "$choice" == "1" ]; then
+    # 1. Determine the filename (from $1 or terminal prompt)
+    if [ -n "$1" ]; then
+        clean_name=$(echo "$1" | sed 's/^_//;s/\.scss$//')
+    else
+        read -p "Enter Profile Name: " filename
+        clean_name=$(echo "$filename" | sed 's/^_//;s/\.scss$//')
+    fi
+    
+    partial_file="${SCSS_DIR}/_${clean_name}.scss"
+     #  Map to clean, hyphen-free Bash variables
+    B_PRIMARY="${2:-#3584e4}"
+    B_SECONDARY="${3:-#241f31}"
+    B_TERTIARY="${4:-#1e1e1e}"
+    B_TEXT="${5:-#f9f9f9}"
+    B_TOPBAR="${8:-$B_PRIMARY}"  # Fallback to primary if empty
+    B_CLOCK="${10:-$B_TEXT}"     # Fallback to text if empty
 
-    #  Prompt for names
-    if [ -z "$PROFILE_NAME" ]; then
-	read -p "Enter NEW color profile name (e.g., light blue): " filename
-	fi
-    #  Format partial filename
-    clean_name=$(echo "$filename" | sed 's/^_//;s/\.scss$//')
-    partial_file="_${clean_name}.scss"
 
+    {
+        printf '$primary: %s;\n' "$B_PRIMARY"
+        printf '$secondary: %s;\n' "$B_SECONDARY"
+        printf '$tertiary: %s;\n' "$B_TERTIARY"
+	printf '$tertiary-light: %s;\n' "rgba(\$tertiary, 0.25)"
+	printf '$text: %s;\n' "$B_TEXT"
+	printf '$text-light: %s;\n' "rgba(\$text, 0.25)"
+        printf '$topbar-color: %s;\n' "$B_TOPBAR"
+        printf '$clock-color: %s;\n' "$B_CLOCK"
+    } > "$partial_file"
+
+    echo "Status: Theme partial updated at $partial_file"
+
+  
     configure_theme "$@"
+
 
 selected_import="$clean_name"
 
@@ -408,7 +473,7 @@ for var in "primary" "secondary" "tertiary" "topbar-color" "clock-color"; do
     sed -i "s/rgba(\$$var, [0-9.]*)/\$$var/g" "$temp_scss"
 done
 
-# 2. Re-apply only if the flag was true
+# Re-apply only if the flag was true
 if [ "$APPLY_TRANS" = true ]; then
     for var in "primary" "secondary" "tertiary" "topbar-color" "clock-color"; do
         # Skip lines with BAR_TARGET
@@ -475,9 +540,62 @@ echo "$import_statement" | cat - "$zen_scss" > temp && mv temp "$zen_scss"
 
 echo "$import_statement" | cat - "$vencord_scss" > temp && mv temp "$vencord_scss"
 
+
+# --- PAPIRUS RECOLOR LOGIC ---
+if [ "$GUI_ICON_SYNC" == "1" ]; then
+    SYSTEM_PAPIRUS="/usr/share/icons/Papirus"
+    LOCAL_ICONS="$HOME/.local/share/icons"
+    CUSTOM_THEME="Papirus-Custom"
+    LOCAL_PAPIRUS="$LOCAL_ICONS/$CUSTOM_THEME"
+
+    echo "Status: Syncing Papirus icons to theme colors..."
+
+    # 1. Ensure local copy exists
+    if [ ! -d "$LOCAL_PAPIRUS" ]; then
+        mkdir -p "$LOCAL_ICONS"
+        cp -r "$SYSTEM_PAPIRUS" "$LOCAL_PAPIRUS"
+        sed -i "s/Name=Papirus/Name=$CUSTOM_THEME/" "$LOCAL_PAPIRUS/index.theme"
+    fi
+
+#  Target ALL blue-themed SVGs (including downloads, pictures, etc.)
+    find "$LOCAL_PAPIRUS" -name "*blue*.svg" | while read -r blue_file; do
+        # Create 'cmg' version of the specific file (e.g., folder-blue-downloads.svg -> folder-cmg-downloads.svg)
+        cmg_file="${blue_file//blue/cmg}"
+        
+        # Reset and Copy
+        \cp -f "$blue_file" "$cmg_file"
+        
+        #  THE MEGA-SED
+        sed -i \
+            "s/#5294e2/$primary/gI; s/fill:#5294e2/fill:$primary/gI; s/stop-color:#5294e2/stop-color:$primary/gI; \
+             s/#84afea/$text/gI; s/fill:#84afea/fill:$text/gI; s/stop-color:#84afea/stop-color:$text/gI; \
+             s/#2e6bb4/$secondary/gI; s/fill:#2e6bb4/fill:$secondary/gI; s/stop-color:#2e6bb4/stop-color:$secondary/gI; \
+             s/#4877b1/$primary/gI; s/fill:#4877b1/fill:$primary/gI; s/stop-color:#4877b1/stop-color:$primary/gI" \
+            "$cmg_file"
+
+        #   Swap the symlink
+        # 'folder.svg' is usually a symlink to 'folder-blue.svg'. 
+        #  change it to point to 'folder-cmg.svg'.
+        base_name=$(basename "$blue_file" "-blue.svg")
+        dir_name=$(dirname "$blue_file")
+        
+        # Point the standard icon (e.g. folder.svg) to new custom one
+        ln -sf "${base_name}-cmg.svg" "${dir_name}/${base_name}.svg"
+    done
+
+    # 3. Final Refresh
+    gsettings set org.gnome.desktop.interface icon-theme "Papirus-Custom"
+    gtk-update-icon-cache -f -t "$LOCAL_PAPIRUS"
+    
+    # Force Nautilus to reload the new symlink targets
+    nautilus -q > /dev/null 2>&1
+    echo "Status: Icons synced successfully with custom profile."
+fi
+
+
 #  Compile SCSS to CSS
 
-# 1. Determine zen toggle
+#  Determine zen toggle
 if [ -n "$PROFILE_NAME" ]; then
     # --- GUI MODE ---
     if [ "$GUI_ZEN_TOGGLE" == "1" ]; then
@@ -546,6 +664,8 @@ if command -v npx sass &> /dev/null; then
     
     echo "Compiling to $output_gtk4dark_css..."
     npx sass "$gtk4_scss" "$output_gtk4dark_css" --style expanded
+
+    echo "DEBUG: Name=$1, Primary=$2, TopbarHex=$8, ClockHex=${10}"
        
 else
     echo "Error: 'sass' compiler not found. Install with: npm install -g sass"
