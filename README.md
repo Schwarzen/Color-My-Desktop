@@ -2,7 +2,7 @@
 A simple tool for creating custom colored gnome-shell, and GTK app themes, with options for creating vesktop, Zen-browser, and youtube themes with your colors!<br>
 Allowing for easy and uniform customization of the shell colors and gtk apps on GNOME
 
-<img src="https://github.com/user-attachments/assets/6422dd01-cafa-432b-8a62-0f71a348aa6f" width="50%"/>
+<img src="https://github.com/user-attachments/assets/6422dd01-cafa-432b-8a62-0f71a348aa6f" width="60%"/>
 
 
 
@@ -14,9 +14,6 @@ Allowing for easy and uniform customization of the shell colors and gtk apps on 
     * Ubuntu/Debian: `sudo apt install gnome-tweaks`
  * GNOME User Themes extension
     * [GNOME Extensions](https://extensions.gnome.org/extension/19/user-themes/) 
-## Dependencies:
- * NPM
- * Sass
 
 ## Install:
 
@@ -35,9 +32,16 @@ to refresh <br>
 
 ## Usage:
 
+
 Open the Color-My-Gnome gui and either create a new profile, or select an existing to edit/apply. <br>
 
-<img width="35%" alt="image" src="https://github.com/user-attachments/assets/b264b047-a5d1-4c03-8eeb-70a8fe99a6d7" /> <br>
+
+
+<p align="center">
+<img width="45%" alt="image" src="https://github.com/user-attachments/assets/bb3afd83-e8f2-448e-8904-896779f72e03" />
+<img width="45%" align="top" alt="image" src="https://github.com/user-attachments/assets/106e2d48-8827-4515-b56f-09f522bef461" />
+</p>
+
 
 Or 
 
@@ -53,6 +57,7 @@ You will then have the option to either create a new color profile or choose fro
 <img width="45%" h alt="Screenshot From 2025-12-28 15-08-27" src="https://github.com/user-attachments/assets/ce7c7a98-9ac0-4afe-b48e-431fcf4fdecd" />
 </p>
 
+### Features:
 Color My GNOME currently has these features: <br>
 * Picking hex color values for <br>
   * Primary (main color used on top bar, window bar, and main window elements)
@@ -65,6 +70,7 @@ Color My GNOME currently has these features: <br>
   * the top bar background
 * Transparent top bar background
 * Apply colors to Zen browser, Youtube, and vesktop <br>
+* Apply colors to Papirus icons (requires Papirus Icons) <br>
 
 Once the theme has finished compiling open the gnome tweaks application, and change your shell theme to "Color-My-Gnome" and enjoy!<br>
 Some apps may require logging out to refresh their colors. <br>
