@@ -32,26 +32,25 @@ class ThemeManager(Adw.ApplicationWindow):
         super().__init__(**kwargs)
         self.current_colors = {} 
         self.status_labels = {}
-        # At the very top of __init__
+    
         self.nautilus_active = False
         self.nautilus_hex_var = "#88c0d0"
         self.datemenu_active = False
         self.datemenu_hex_var = "#88c0d0"
-        # 1. WINDOW BASICS
+     
         self.set_title("Color My Gnome")
         self.set_default_size(400, 600)
 
-        # 2. CREATE CONTAINERS (The "Skeleton")
-        # Root is Toast -> inside is NavView -> inside is MainBox
+   
         self.toast_overlay = Adw.ToastOverlay()
         self.nav_view = Adw.NavigationView()
         self.main_page_content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        # 3. ASSEMBLY (The "Hierarchy")
-        self.set_content(self.toast_overlay)           # Window shows Toast
-        self.toast_overlay.set_child(self.nav_view)    # Toast shows NavView
+    
+        self.set_content(self.toast_overlay)           
+        self.toast_overlay.set_child(self.nav_view)   
 
-        # 4. BUILD THE MAIN PAGE CONTENT
+        #  BUILD THE MAIN PAGE CONTENT
         self.header = Adw.HeaderBar()
         self.main_page_content.append(self.header)
 
@@ -140,7 +139,7 @@ class ThemeManager(Adw.ApplicationWindow):
         self.trans_switch.set_active(False) # Default solid
         self.group.add(self.trans_switch)
         
-                # --- 4. THE "SWAP" BUTTON (ActionRow) ---
+                #  SWAP BUTTON (ActionRow) ---
         # This is a row that looks like a button but fits in a PreferencesGroup
         self.advanced_link = Adw.ActionRow(title="Advanced Options", selectable=False)
         self.advanced_link.add_suffix(Gtk.Image.new_from_icon_name("go-next-symbolic"))
@@ -182,7 +181,7 @@ class ThemeManager(Adw.ApplicationWindow):
         # Create a group for your advanced toggles
         self.adv_group = Adw.PreferencesGroup(title="Advanced Settings")
         self.adv_pref_page.add(self.adv_group)
-                # 1. Create a group for the grid
+                #  Create a group for the grid
         self.grid_group = Adw.PreferencesGroup(title="Quick Tweak Presets")
         self.adv_pref_page.add(self.grid_group)
 
@@ -198,7 +197,7 @@ class ThemeManager(Adw.ApplicationWindow):
 
                         # 3. Helper to create a "Box" Button
         def add_grid_item(label, default_color, css_id):
-            # 1. CREATE THE SETTINGS PAGE FOR THIS ITEM
+            # CREATE THE SETTINGS PAGE FOR THIS ITEM
             sub_page_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
             
             # Sub-page Header
@@ -211,7 +210,7 @@ class ThemeManager(Adw.ApplicationWindow):
             sub_group = Adw.PreferencesGroup(title=f"{label} Customization")
             sub_pref_page.add(sub_group)
 
-            # 2. ADD THE CONTROLS (Live-Syncing)
+            #  ADD THE CONTROLS (Live-Syncing)
             # Main Toggle
             main_row = Adw.SwitchRow(title="Use Custom Main Color")
             sub_group.add(main_row)
@@ -235,11 +234,11 @@ class ThemeManager(Adw.ApplicationWindow):
             main_row.bind_property("active", main_entry, "visible", 0)
             sec_row.bind_property("active", sec_entry, "visible", 0)
 
-            # 3. WRAP IN NAV PAGE
+            # WRAP IN NAV PAGE
             sub_nav_page = Adw.NavigationPage.new(sub_page_box, label)
             self.nav_view.add(sub_nav_page)
 
-            # 4. CREATE THE GRID BOX BUTTON
+            #  CREATE THE GRID BOX BUTTON
             box_button = Gtk.Button(width_request=140, height_request=140)
             box_button.add_css_class("flat")
             
@@ -265,7 +264,7 @@ class ThemeManager(Adw.ApplicationWindow):
             # Store these as attributes if you need to access them for building
             # Example: self.adv_toggles[css_id] = toggle
 
-        # 4. Add items to your grid
+        #  Add items to your grid
         add_grid_item("Nautilus", "#88c0d0", "nautilus_custom")
         add_grid_item("System", "#bd93f9", "system_custom")
         
@@ -283,12 +282,12 @@ class ThemeManager(Adw.ApplicationWindow):
         
         
     def open_small_window(self, title, default_color, css_id): 
-        # 1. Create the sub-window
+        # Create the sub-window
         popup = Adw.Window(transient_for=self)
         popup.set_default_size(320, 250)
         popup.set_title(title)
         
-        # 2. Layout container
+        #  Layout container
         # Using a Box with margins for a clean Libadwaita look
         content_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
         content_box.set_margin_top(18)
@@ -316,7 +315,7 @@ class ThemeManager(Adw.ApplicationWindow):
         sec_switch.bind_property("active", sec_entry, "visible", 0)
         content_box.append(sec_entry)
         
-        # 4. The Custom Entry (Hidden initially)
+        #  The Custom Entry (Hidden initially)
         # We use a Gtk.Entry for the compact popup window
         custom_entry = Gtk.Entry()
         custom_entry.set_text(default_color)
@@ -422,11 +421,10 @@ class ThemeManager(Adw.ApplicationWindow):
             with open(partial_path, "r") as f:
                 content = f.read()
 
-            # 2. Helper to extract and sync advanced rows
+            #  Helper to extract and sync advanced rows
             def sync_advanced_feature(css_id, var_name):
                 import re
-                # 2026 Robust Regex: Matches '$var-name: #hex;' or '$var-name: #hex !important;'
-                # Handles hyphens and variable whitespace correctly
+           
                 pattern = rf"\${re.escape(var_name)}:\s*(#[0-9a-fA-F]{{3,6}})"
                 match = re.search(pattern, content)
                 
@@ -440,17 +438,16 @@ class ThemeManager(Adw.ApplicationWindow):
                     # Update the text entry
                     en.set_text(hex_val)
                     
-                    # THE FIX: Only toggle ON if the value is different from primary
-                    # This distinguishes between 'inherited' and 'custom'
+          
                     if hex_val != primary_hex:
                         sw.set_active(True)
                     else:
                         sw.set_active(False)
                 elif sw:
-                    # If variable is missing from the file, it's definitely OFF
+                 
                     sw.set_active(False)
 
-            # 2. TRIGGER SYNC (Ensure these IDs match your 'add_grid_item' calls exactly)
+            #  TRIGGER SYNC 
             sync_advanced_feature("nautilus_custom", "nautilus-main")
             sync_advanced_feature("nautilus_custom_sec", "nautilus-secondary")
             sync_advanced_feature("datemenu_custom", "system-datemenu")
@@ -484,14 +481,14 @@ class ThemeManager(Adw.ApplicationWindow):
         # If you have the switch: self.topbar_switch.set_active(True)
     # Assuming 'selected' is the string from your dropdown/ComboRow
     def update_gui_from_file(self, selected):
-        # 1. Auto-fill standard color rows
+        # Auto-fill standard color rows
         # In PyGObject, we store rows in a dictionary: self.color_rows = {"primary": row_object, ...}
         for var, row in self.color_rows.items():
             val = self.get_scss_value(selected, var)
             if val:
                 row.set_text(val)  # Replaces delete(0, tk.END) and insert(0, val)
 
-        # 2. Check for Topbar Color
+        #  Check for Topbar Color
         tb_val = self.get_scss_value(selected, "topbar-color")
         
         if tb_val:
@@ -523,13 +520,13 @@ class ThemeManager(Adw.ApplicationWindow):
             # Hide the row
             self.clock_row.set_visible(False)
         # --- Top Bar Section ---
-        # 1. The Toggle Switch
+        #  The Toggle Switch
         self.topbar_switch = Adw.SwitchRow()
         self.topbar_switch.set_title("Custom Topbar")
         self.topbar_switch.set_active(False) # Default to 0
         self.group.add(self.topbar_switch)
 
-        # 2. The Color Entry Row
+        #  The Color Entry Row
         self.topbar_row = Adw.EntryRow()
         self.topbar_row.set_title("Topbar Color")
         self.topbar_row.set_text("#3584e4") # Default value
@@ -626,7 +623,7 @@ class ThemeManager(Adw.ApplicationWindow):
         else:
             clock_val = text_color
             
-            # 1. Logic for Nautilus Main
+            #  Logic for Nautilus Main
         # If the advanced toggle is OFF, fallback to Primary
         n_main_sw = getattr(self, "nautilus_custom_switch")
         n_main_entry = getattr(self, "nautilus_custom_entry")
