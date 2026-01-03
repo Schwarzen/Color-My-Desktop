@@ -1,6 +1,6 @@
 # Color-My-GNOME
-A simple tool for creating custom colored gnome-shell, and GTK app themes, with options for creating vesktop, Zen-browser, and youtube themes with your colors!<br>
-Allowing for easy and uniform customization of the shell colors and gtk apps on GNOME
+A simple tool for creating, managing, and applying custom color palettes to the gnome-shell, and GTK apps, with options for creating/applying vesktop, Zen-browser, and youtube themes with your colors,<br>
+allowing for easy and uniform customization of the shell colors and gtk/(some)non gtk - apps on GNOME
 
 <img src="https://github.com/user-attachments/assets/6422dd01-cafa-432b-8a62-0f71a348aa6f" width="60%"/>
 
@@ -72,7 +72,7 @@ Color My GNOME currently has these features: <br>
 * Apply colors to Zen browser, Youtube, and vesktop <br>
 * Apply colors to Papirus icons (requires Papirus Icons) <br>
 
-Once the theme has finished compiling open the gnome tweaks application, and change your shell theme to "Color-My-Gnome" and enjoy!<br>
+Once the theme has finished compiling, open the gnome tweaks application and change your shell theme to "Color-My-Gnome"<br>
 Some apps may require logging out to refresh their colors. <br>
 
 Color my GNOME is still being tested, please backup any important files and use with caution. Color my GNOME only alters the files it comes with, <br>
