@@ -35,14 +35,9 @@ to refresh <br>
 
 Open the Color-My-Gnome gui and either create a new profile, or select an existing to edit/apply. <br>
 
-
-
-<p align="center">
-<img width="45%" alt="image" src="https://github.com/user-attachments/assets/bb3afd83-e8f2-448e-8904-896779f72e03" />
-<img width="45%" align="top" alt="image" src="https://github.com/user-attachments/assets/106e2d48-8827-4515-b56f-09f522bef461" />
+<p>
+      <img width="60%" src="https://github.com/user-attachments/assets/bb3afd83-e8f2-448e-8904-896779f72e03" />
 </p>
-
-
 Or 
 
 Run the command <br>
@@ -68,9 +63,24 @@ Color My GNOME currently has these features: <br>
   * the Date/Time
   * the top bar icons
   * the top bar background
+    
 * Transparent top bar background
 * Apply colors to Zen browser, Youtube, and vesktop <br>
 * Apply colors to Papirus icons (requires Papirus Icons) <br>
+* Apply specific colors to nautilus elements <br>
+
+
+
+<img src="https://github.com/user-attachments/assets/4ae977ae-4898-43b9-aae3-29d82273a4b3" width="400" height="600" align="left" />
+
+
+<img src="https://github.com/user-attachments/assets/106e2d48-8827-4515-b56f-09f522bef461" width="25%" />
+<img src="https://github.com/user-attachments/assets/1deda1c4-101b-4d85-877d-c0697069a29f" width="25%"  /><br>
+<img src="https://github.com/user-attachments/assets/3bc3e076-06fa-4a24-a1c6-cd011d16816a" width="25%"  />
+<img src="https://github.com/user-attachments/assets/01314d65-7370-427f-bd11-0487b063ffe1" width="25%"  />
+
+
+<br clear="left" />
 
 Once the theme has finished compiling, open the gnome tweaks application and change your shell theme to "Color-My-Gnome"<br>
 Some apps may require logging out to refresh their colors. <br>
