@@ -6,7 +6,7 @@ import threading
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
-from gi.repository import Gtk, Adw, Gdk
+from gi.repository import Gtk, Adw, Gdk, GLib
 
 # --- CONFIGURATION ---
 SCSS_DIR = os.path.expanduser("~/.local/share/Color-My-Gnome/scss")
@@ -157,6 +157,22 @@ class ThemeManager(Adw.ApplicationWindow):
         self.build_btn.set_margin_top(24)
         self.build_btn.set_margin_bottom(24)
         
+        self.log_container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        self.log_container.set_visible(False) # Hidden until build starts
+        self.main_page_content.append(self.log_container)
+
+        #  Add a progress bar for visual feedback
+        self.progress_bar = Gtk.ProgressBar()
+        self.log_container.append(self.progress_bar)
+
+        # Create the scrollable terminal area
+        self.scrolled_window = Gtk.ScrolledWindow(min_content_height=150)
+        self.scrolled_window.add_css_class("card") # Adds a nice border/background
+
+        self.log_view = Gtk.TextView(editable=False, monospace=True)
+        self.scrolled_window.set_child(self.log_view)
+        self.log_container.append(self.scrolled_window)
+        
         # Connect the signal to the method above
         self.build_btn.connect("clicked", self.on_run_build_clicked)
         
@@ -185,7 +201,7 @@ class ThemeManager(Adw.ApplicationWindow):
         self.grid_group = Adw.PreferencesGroup(title="Quick Tweak Presets")
         self.adv_pref_page.add(self.grid_group)
 
-        # 2. Create the FlowBox (The Grid)
+        #  Create the FlowBox (The Grid)
         self.flowbox = Gtk.FlowBox()
         self.flowbox.set_valign(Gtk.Align.START)
         self.flowbox.set_max_children_per_line(3) # Forces 3 columns
@@ -656,25 +672,73 @@ class ThemeManager(Adw.ApplicationWindow):
             n_main_val, # $14
             "#3584e4",  # $15 (Datemenu fallback)
             n_sec_val   # $16
-        ]                                                                                                   
+        ]   
+        
+        self.log_container.set_visible(True)
+        self.log_view.get_buffer().set_text("") 
+        self.progress_bar.set_fraction(0.1)
+
+        # Start the build in a background thread
+        thread = threading.Thread(target=self.execute_build, args=(args,))
+        thread.daemon = True # Closes thread if you exit the app
+        thread.start()
         
         button.set_sensitive(False)
         
-        def worker():
-            try:
-                import subprocess
-                subprocess.run(["bash", BASH_SCRIPT] + args, check=True)
-                from gi.repository import GLib
-           
-                GLib.idle_add(self.show_success_toast, args[0], button)
-            except Exception as e:
-                from gi.repository import GLib
-                GLib.idle_add(self.show_error_dialog, f"Build failed: {e}")
-                GLib.idle_add(button.set_sensitive, True)
-                
-     
-        thread = threading.Thread(target=worker)
-        thread.start()
+        
+        
+
+    def execute_build(self, args):
+        try:
+            # Use 'stdbuf -oL' to force Bash to send output line-by-line immediately
+            # universal_newlines=True ensures text is handled as strings, not bytes
+            process = subprocess.Popen(
+                ["stdbuf", "-oL", BASH_SCRIPT] + args,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+                universal_newlines=True
+            )
+
+            # Read output in real-time
+            for line in iter(process.stdout.readline, ""):
+                if line:
+                    # Use idle_add to update the UI from the background thread safely
+                    GLib.idle_add(self.append_log, line)
+
+            process.wait()
+        except Exception as e:
+            GLib.idle_add(self.append_log, f"Error: {str(e)}\n")
+        finally:
+            GLib.idle_add(self.build_finished)
+
+    def append_log(self, text):
+        buffer = self.log_view.get_buffer()
+        buffer.insert(buffer.get_end_iter(), text)
+        
+        # Auto-scroll to the bottom of the log
+        adj = self.scrolled_window.get_vadjustment()
+        adj.set_value(adj.get_upper() - adj.get_page_size())
+        
+        self.progress_bar.pulse() # Makes the progress bar move
+        return False
+        
+    def build_finished(self):
+        self.progress_bar.set_fraction(1.0)
+        self.toast_overlay.add_toast(Adw.Toast.new("Theme Applied Successfully!"))
+        GLib.timeout_add(3000, self.auto_hide_logs)
+
+
+    def auto_hide_logs(self):
+        # Hide the terminal box and re-enable the build button
+        self.log_container.set_visible(False)
+        # self.build_button.set_sensitive(True) # Re-enable if you disabled it
+        
+        # Optional: Show a final success toast
+        self.toast_overlay.add_toast(Adw.Toast.new("Build Complete!"))
+    
+        return False # CRITICAL: Tells GLib to only run this once
 
 
     def show_success_toast(self, theme_name, button):
