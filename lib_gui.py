@@ -623,6 +623,8 @@ class ThemeManager(Adw.ApplicationWindow):
 
         
     def on_run_build_clicked(self, button):
+        self.active_build_button = button 
+        self.active_build_button.set_sensitive(False)
     # Get primary hex and ensure it is a string
         primary_color = str(self.primary_row.get_text() or "#3584e4")
         secondary_color = str(self.secondary_row.get_text() or "#3584e4")
@@ -734,6 +736,8 @@ class ThemeManager(Adw.ApplicationWindow):
         # Hide the terminal box and re-enable the build button
         self.log_container.set_visible(False)
         # self.build_button.set_sensitive(True) # Re-enable if you disabled it
+        if hasattr(self, "active_build_button"):
+            self.active_build_button.set_sensitive(True)
         
         # Optional: Show a final success toast
         self.toast_overlay.add_toast(Adw.Toast.new("Build Complete!"))
