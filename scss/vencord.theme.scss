@@ -1,4 +1,4 @@
-@use '' as *;
+@use 'brown' as *;
 
 .theme-dark, .theme-light {
     &, 
@@ -106,10 +106,55 @@
     background-color: #{$primary} !important;
     display: block;
     /* Add your width, height, or positioning here */
+   
+}
+
+[class*="-sidebar"] {
+    position: relative; /* Essential for absolute positioning of children */
+    
+    /* The left gap filler */
+    &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 6px; /* Adjust this to match the width of the gap */
+        background-color: #{$primary} !important;
+        z-index: 1; /* Ensures it sits on top of the background */
+    }
+}
+
+.e6b7699ce8339e1c-privateChannels {
+	background-color: #{$primary} !important;
+	}
+
+[class*="-sidebarListRounded"] {
+    border-left: 1px solid #{$secondary} !important;
+    border-top-left-radius: 0; /* Removes the corner gap */
+    height: 100% !important; 
+    max-height: none !important; /* Discord often caps this */
+    margin-bottom: 0 !important;
+    border-bottom-left-radius: 0 !important; /* Optional: matches the floor better */
+}
+
+
+/* Target the parent container that holds the channel list */
+nav[class*="sidebar_"] {
+    background-color: #{$secondary} !important; /* Match your theme's dark background */
+}
+
+.e131a99484292a19-container {
+    background-color: #{$secondary} !important;
 }
 
 .e6b7699ce8339e1c-searchBar {
-background-color: #{$primary} !important;
+    background-color: #{$primary} !important;
+}
+
+._5e434347c823b592-panels {
+    box-shadow: 0 -4px 12px 0 rgba(0, 0, 0, 0.3) !important;
+
 }
 
 

@@ -119,12 +119,33 @@ gridview > child {
 }
 
 gridview > child:selected {
-  outline-color: $tertiary-light;
+  background-color: $nautilus-main;
+  outline-color: $text;
 }
 
 gridview > child box {
   border-spacing: 8px;
   margin: 12px;
+}
+
+/* 1. Target the viewcell when selected */
+.nautilus-window .view nautilusviewcell:selected,
+.nautilus-window gridview child:selected nautilusviewcell {
+    background-color: $nautilus-main ;
+    background-image: none ; /* Kills the default Adwaita blue gradient */
+    outline: 1px solid $text ;
+    border-radius: 8px;
+}
+
+/* 2. Target the hover state specifically for the cell */
+.nautilus-window .view nautilusviewcell:hover {
+    background-color: rgba(255, 255, 255, 0.1) ;
+}
+
+/* 3. Handle the 'inactive' selection (when window isn't focused) */
+.nautilus-window .view nautilusviewcell:selected:backdrop {
+    background-color: $nautilus-main;
+    opacity: 0.7;
 }
 
 coverflow cover {
@@ -2864,17 +2885,17 @@ tabbar tab:disabled, notebook > header > tabs > tab:disabled {
 }
 
 tabbar tab:active, notebook > header > tabs > tab:active {
-  background-color: $secondary;
+  background-color: $primary;
   color: $text;
   box-shadow: none;
 }
 
 tabbar tab:checked:not(:active), notebook > header > tabs > tab:checked:not(:active), tabbar tab:selected:not(:active), notebook > header > tabs > tab:selected:not(:active) {
   transition: all 75ms cubic-bezier(0, 0, 0.2, 1), border-image 225ms cubic-bezier(0, 0, 0.2, 1), background-size 0ms, background-image 0ms, background-color 0ms;
-background-color: $secondary;
+background-color: $nautilus-main; /* nautilus tab bar active tab */
   color: $text;
   box-shadow: none;
-}
+} 
 
 tabbar tab:checked:not(:active):disabled, notebook > header > tabs > tab:checked:not(:active):disabled, tabbar tab:selected:not(:active):disabled, notebook > header > tabs > tab:selected:not(:active):disabled {
   color: $text;
@@ -3133,7 +3154,7 @@ tabbar tabbox > background {
 tabbar tabbox > separator {
   margin: 9px 0;
   min-width: 1px;
-  background-color: rgba(251, 241, 199, 0.12);
+  background-color: rgba($primary, 0.12);
   transition: opacity 150ms ease-in-out;
 }
 
@@ -4220,6 +4241,8 @@ row > box.header > box.title {
   border-spacing: 3px;
 }
 
+/* nautilus content */
+
 .nautilus-window .nautilus-grid-view child.activatable,
 .nautilus-window .nautilus-list-view child.activatable, columnview.view > header > button,
 treeview.view > header > button, row.activatable {
@@ -4249,7 +4272,7 @@ treeview.view > header > button:hover, .nautilus-window .nautilus-grid-view chil
 .nautilus-window .nautilus-list-view child.has-open-popup.activatable, columnview.view > header > button.has-open-popup,
 treeview.view > header > button.has-open-popup, row.activatable:hover, row.activatable.has-open-popup {
   color: $text;
-  background-color: rgba($nautilus-secondary, 0.05);
+  background-color: rgba($text, 0.05);
   box-shadow: none;
 }
 
@@ -4260,7 +4283,7 @@ treeview.view > header > button:active, row.activatable:active {
   animation: ripple 225ms cubic-bezier(0, 0, 0.2, 1) forwards;
   background-image: radial-gradient(circle, rgba($secondary, 0.05) 10%, transparent 0%);
   background-size: 0% 0%;
-  background-color: rgba($secondary, 0.05);
+  background-color: rgba($text, 0.10);
   color: $text;
   box-shadow: none;
 }
@@ -4268,13 +4291,13 @@ treeview.view > header > button:active, row.activatable:active {
 .nautilus-window .nautilus-grid-view child.activatable:selected,
 .nautilus-window .nautilus-list-view child.activatable:selected, columnview.view > header > button:selected,
 treeview.view > header > button:selected, row.activatable:selected {
-  background-color: rgba($nautilus-secondary, 0.06);
+  background-color: rgba($text, 0.10);
 }
 
 .nautilus-window .nautilus-grid-view child.activatable:selected:hover,
 .nautilus-window .nautilus-list-view child.activatable:selected:hover, columnview.view > header > button:selected:hover,
 treeview.view > header > button:selected:hover, row.activatable:selected:hover {
-  background-color: rgba($secondary, 0.08);
+  background-color: rgba($text, 0.14);
 }
 
 button row.activatable:focus, button row.activatable:hover, button row.activatable:active {
@@ -4287,7 +4310,7 @@ button:checked row.activatable {
 }
 
 row:selected {
-  background-color: rgba($secondary, 0.06);
+  background-color: rgba($text, 0.06);
   color: $text;
   box-shadow: none;
 }
@@ -5656,8 +5679,16 @@ popover.entry-completion > contents {
 
 .nautilus-window headerbar {
     background-color: $nautilus-main; /* nautilus top bar*/
-    color: $text;
+    color: $text  ;
 }
+
+/* Highlight the current folder text so it stays visible */
+.nautilus-window pathbar button:last-child label {
+    color: $text ;
+    font-weight: bold;
+    opacity: 1.0;
+}
+
 
 .nautilus-window headerbar windowhandle {
     background-color: $nautilus-main;
@@ -5674,8 +5705,15 @@ popover.entry-completion > contents {
   color: $text;
 }
 
+
+
+
 .nautilus-window tabbar tab:checked label {
-  color: $text;
+  color: $primary ;
+}
+
+.nautilus-window tabbar tab:active label {
+  color: $primary ;
 }
 
 .nautilus-window tabbar tab label {
@@ -5687,12 +5725,6 @@ popover.entry-completion > contents {
   color: $text;
 }
 
-
-
-.nautilus-window .sidebar-pane:backdrop {
-  background-color: $nautilus-main;
-  transition: none;
-}
 
 .nautilus-window placesview label {
   color: $text;
@@ -5735,9 +5767,12 @@ popover.entry-completion > contents {
   border-style: none;
   border-radius: 9px;
   background-color: $tertiary-light;
-  color: $secondary;
+  color: $text;
   box-shadow: 0 3px 2px -2px rgba(0, 0, 0, 0.05), 0 2px 3px -1px rgba(0, 0, 0, 0.06), 0 1px 4px 0 rgba(0, 0, 0, 0.05);
 }
+
+
+
 
 /* nautilus tab bar text color*/
 .nautilus-window .floating-bar button {
@@ -5779,7 +5814,7 @@ popover.entry-completion > contents {
 }
 
 #NautilusQueryEditorTag {
-background-color: $secondary;
+background-color: $nautilus-secondary;
 }
 
 #NautilusQueryEditorTag > button.image-button {
@@ -5788,8 +5823,8 @@ background-color: $secondary;
 }
 
 #NautilusPathBar {
-  background-color: $tertiary-light;
-  border-radius: 12px;
+  background-color: $nautilus-secondary;
+  border-radius: 10px;
   margin: 6px 0;
 }
 
@@ -5798,8 +5833,9 @@ background-color: $secondary;
   border-radius: 12px;
 }
 
+/* nautilus current directory */
 #NautilusPathButton.current-dir {
-  color: $secondary;
+  color: $text;
 }
 
 #NautilusPathButton.current-dir:hover, #NautilusPathButton.current-dir:active {
@@ -7507,8 +7543,8 @@ placessidebar list.navigation-sidebar > row:selected:hover, leaflet.unfolded .co
 .sidebar-pane toolbarview > scrolledwindow > scrollbar.overlay-indicator:not(.dragging):not(.hovering),
 .sidebar-pane navigation-view-page stack > scrolledwindow > scrollbar.overlay-indicator:not(.dragging):not(.hovering), filechooser paned > box scrolledwindow scrollbar.overlay-indicator:not(.dragging):not(.hovering), placessidebar > scrolledwindow > scrollbar.overlay-indicator:not(.dragging):not(.hovering), .nautilus-window .nautilus-grid-view scrolledwindow scrollbar.overlay-indicator:not(.dragging):not(.hovering),
 .nautilus-window .nautilus-list-view scrolledwindow scrollbar.overlay-indicator:not(.dragging):not(.hovering), leaflet.unfolded > box > scrolledwindow > scrollbar.overlay-indicator:not(.dragging):not(.hovering), leaflet.unfolded .contacts-contact-list > scrolledwindow > scrollbar.overlay-indicator:not(.dragging):not(.hovering), .sidebar-pane toolbarview > stack > box > widget > widget > scrolledwindow > scrollbar.overlay-indicator:not(.dragging):not(.hovering) {
-  border-color: transparent;
-  background-color: transparent;
+  border-color: $primary;
+  background-color: $primary;
   /* > range > trough > slider { */
   /* 	border: none; */
   /* 	margin: $corner-radius - 8px - $space-size / 2; */
@@ -7529,7 +7565,7 @@ placessidebar list.navigation-sidebar > row:selected:hover, leaflet.unfolded .co
 .sidebar-pane toolbarview > scrolledwindow > scrollbar.overlay-indicator.hovering,
 .sidebar-pane navigation-view-page stack > scrolledwindow > scrollbar.overlay-indicator.hovering, filechooser paned > box scrolledwindow scrollbar.overlay-indicator.hovering, placessidebar > scrolledwindow > scrollbar.overlay-indicator.hovering, .nautilus-window .nautilus-grid-view scrolledwindow scrollbar.overlay-indicator.hovering,
 .nautilus-window .nautilus-list-view scrolledwindow scrollbar.overlay-indicator.hovering, leaflet.unfolded > box > scrolledwindow > scrollbar.overlay-indicator.hovering, leaflet.unfolded .contacts-contact-list > scrolledwindow > scrollbar.overlay-indicator.hovering, .sidebar-pane toolbarview > stack > box > widget > widget > scrolledwindow > scrollbar.overlay-indicator.hovering {
-  background-color: transparent;
+  background-color: $primary;
 }
 
 .nautilus-window .nautilus-grid-view scrolledwindow.undershoot-top > undershoot.top,

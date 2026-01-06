@@ -1,15 +1,17 @@
-@use '' as *;
+@use 'brown' as *;
 canvas {
-    background-color: $primary; /* Standard CSS property - usually works fine */
+    background-color: $primary; 
 }
 
-  yt-formatted-string, 
-    span:not(.ytp-time-current):not(.ytp-time-duration), 
-    div#contentText, 
-    #video-title,
-    h1, h2, h3 {
-        color: #{$text} !important;
-    }
+/* Only target these when they are inside a YouTube component */
+ytd-app h1, 
+ytd-app h2, 
+ytd-app h3,
+ytd-app yt-formatted-string span:not(.ytp-time-current):not(.ytp-time-duration), 
+ytd-app div#contentText, 
+ytd-app #video-title {
+    color: #{$text} !important;
+}
 
 :root, html[dark], [dark] {
   --yt-spec-base-background: #{$secondary} !important;
@@ -21,7 +23,16 @@ canvas {
   --yt-spec-text-secondary: #{$text} !important;
   --yt-spec-text-disabled: #{$tertiary} !important;
   --yt-spec-call-to-action: #{$text} !important;
+  --yt-spec-app-drawer: #{$primary} !important;
+  
 }
+
+/* Targets the app-drawer content container */
+#contentContainer[class*="tp-yt-app-drawer"] {
+    background-color: #{$primary} !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 
 ytd-mini-guide-renderer.style-scope.ytd-app {
     background-color: #{$primary} !important;

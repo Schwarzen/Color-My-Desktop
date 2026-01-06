@@ -1,0 +1,26 @@
+# Ensure these variables are at the top of your Makefile
+PREFIX ?= /app
+BIN_DIR = $(PREFIX)/bin
+DATA_DIR = $(PREFIX)/share
+APP_ID = org.gnome.ColorMyGnome
+
+install:
+	# 1. Install binaries
+	install -d $(BIN_DIR)
+	install -m 755 lib_gui.py $(BIN_DIR)/color-my-gnome
+	install -m 755 color-my-gnome.sh $(BIN_DIR)/color-my-gnome-backend
+
+	# 2. Install Desktop File (Makes it appear in menus)
+	install -d $(DATA_DIR)/applications
+	install -m 644 $(APP_ID).desktop $(DATA_DIR)/applications/
+
+	# 3. Install AppStream MetaInfo (Required for app stores)
+#	install -d $(DATA_DIR)/metainfo
+#	install -m 644 $(APP_ID).metainfo.xml $(DATA_DIR)/metainfo/
+
+	# 4. Install Icon (Must be 128x128 PNG or scalable SVG)
+#	install -d $(DATA_DIR)/icons/hicolor/scalable/apps
+#	install -m 644 $(APP_ID).svg $(DATA_DIR)/icons/hicolor/scalable/apps/
+
+
+

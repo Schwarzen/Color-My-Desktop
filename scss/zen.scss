@@ -1,4 +1,4 @@
-@use '' as *;
+@use 'brown' as *;
 :root {
     --zen-colors-primary: #{$primary} !important; /* Your SASS variable */
     --zen-main-browser-background: #{$primary} !important;
