@@ -105,6 +105,11 @@ make clean
 
 
 
+<img width="3839" height="2159" alt="ss1" src="https://github.com/user-attachments/assets/61e6643a-3d71-4cda-9a94-1d54a00563b8" />
 
-<img width="3829" height="2159" alt="Screenshot From 2025-12-26 03-28-56" src="https://github.com/user-attachments/assets/806b1c99-3115-4ee7-868c-cdaf90a2a204" />
+<img width="3839" height="2159" alt="ss4" src="https://github.com/user-attachments/assets/6cc2f536-25cf-4737-be39-5c29e786ac6a" />
+<img width="3839" height="2159" alt="ss5" src="https://github.com/user-attachments/assets/8974ce27-5f73-41b9-abfc-dfa855735854" />
+
+
+
 
