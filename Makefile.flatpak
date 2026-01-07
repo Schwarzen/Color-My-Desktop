@@ -15,12 +15,12 @@ install:
 	install -m 644 $(APP_ID).desktop $(DATA_DIR)/applications/
 
 	# 3. Install AppStream MetaInfo (Required for app stores)
-#	install -d $(DATA_DIR)/metainfo
-#	install -m 644 $(APP_ID).metainfo.xml $(DATA_DIR)/metainfo/
+	install -d $(DATA_DIR)/metainfo
+	install -m 644 $(APP_ID).metainfo.xml $(DATA_DIR)/metainfo/
 
 	# 4. Install Icon (Must be 128x128 PNG or scalable SVG)
-#	install -d $(DATA_DIR)/icons/hicolor/scalable/apps
-#	install -m 644 $(APP_ID).svg $(DATA_DIR)/icons/hicolor/scalable/apps/
+	install -d $(DATA_DIR)/icons/hicolor/scalable/apps
+	install -m 644 $(APP_ID).png $(DATA_DIR)/icons/hicolor/scalable/apps/
 
 
 

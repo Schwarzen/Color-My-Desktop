@@ -643,7 +643,7 @@ else
 
     fi
 
-if command -v npx sass &> /dev/null; then
+if command -v $SASS &> /dev/null; then
     
     #  Compile YouTube CSS if user said 'y'
     if [[ "$apply_youtube" =~ ^[Yy]$ ]]; then

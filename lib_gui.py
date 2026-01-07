@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import gi
 import os
 import re
@@ -10,7 +11,12 @@ from gi.repository import Gtk, Adw, Gdk, GLib
 
 # --- CONFIGURATION ---
 SCSS_DIR = os.path.expanduser("~/.local/share/Color-My-Gnome/scss")
-BASH_SCRIPT = os.path.expanduser("~/.local/bin/color-my-gnome")
+if os.environ.get("FLATPAK_ID"):
+    # Inside Flatpak, your script is at /app/bin/
+    BASH_SCRIPT = "/app/bin/color-my-gnome-backend"
+else:
+    # Native install location
+    BASH_SCRIPT = os.path.expanduser("~/.local/bin/color-my-gnome")
 themes = [f[1:-5] for f in os.listdir(SCSS_DIR) if f.startswith('_') and f.endswith('.scss')]
 
 preview_css_provider = Gtk.CssProvider()
@@ -179,7 +185,7 @@ class ThemeManager(Adw.ApplicationWindow):
         # button to mainbox
         self.main_page_content.append(self.build_btn)
         
-        self.main_nav_page = Adw.NavigationPage.new(self.main_page_content, "Theme Settings")
+        self.main_nav_page = Adw.NavigationPage.new(self.main_page_content, "Color My Gnome")
         self.nav_view.add(self.main_nav_page)
        
         
