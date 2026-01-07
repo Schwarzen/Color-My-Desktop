@@ -34,7 +34,6 @@ modules:
         url: https://github.com/Schwarzen/Color-My-Desktop
         tag: v0.9.4
         commit: b043855558677ad454c1aba18d1a029682011805
-
 finish-args:
   - --share=ipc
   - --socket=fallback-x11

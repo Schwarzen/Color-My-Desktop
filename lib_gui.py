@@ -13,10 +13,10 @@ from gi.repository import Gtk, Adw, Gdk, GLib
 SCSS_DIR = os.path.expanduser("~/.local/share/Color-My-Desktop/scss")
 if os.environ.get("FLATPAK_ID"):
     # Inside Flatpak, your script is at /app/bin/
-    BASH_SCRIPT = "/app/bin/Color-My-Desktop-backend"
+    BASH_SCRIPT = "/app/bin/color-my-desktop-backend"
 else:
     # Native install location
-    BASH_SCRIPT = os.path.expanduser("~/.local/bin/Color-My-Desktop")
+    BASH_SCRIPT = os.path.expanduser("~/.local/bin/color-my-desktop")
 themes = [f[1:-5] for f in os.listdir(SCSS_DIR) if f.startswith('_') and f.endswith('.scss')]
 
 preview_css_provider = Gtk.CssProvider()
