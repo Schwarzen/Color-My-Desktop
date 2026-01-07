@@ -1,4 +1,4 @@
-# Color-My-GNOME
+# Color-My-Desktop
 A simple tool for creating, managing, and applying custom color palettes to a custom gnome-shell theme, and GTK apps theme, with options for creating/applying vesktop, Zen-browser, and youtube themes with your colors,<br>
 allowing for easy and uniform customization of the shell colors and gtk/(some)non gtk - apps on GNOME
 
@@ -18,12 +18,12 @@ allowing for easy and uniform customization of the shell colors and gtk/(some)no
 ## Install:
 
 ```
-git clone https://github.com/Schwarzen/Color-My-Gnome.git
-cd Color-My-Gnome
+git clone https://github.com/Schwarzen/Color-My-Desktop.git
+cd Color-My-Desktop
 make install 
 ```
 
-Color My GNOME installs into ~/.local/bin which may not be automatically included in the PATH of some distributions like Arch linux,<br>
+Color My Desktop installs into ~/.local/bin which may not be automatically included in the PATH of some distributions like Arch linux,<br>
 please add <br>
 `export PATH="$HOME/.local/bin:$PATH"`<br>
 to your .bashrc and run <br>
@@ -33,7 +33,7 @@ to refresh <br>
 ## Usage:
 
 
-Open the Color-My-Gnome gui and either create a new profile, or select an existing to edit/apply. <br>
+Open the Color-My-Desktop gui and either create a new profile, or select an existing to edit/apply. <br>
 
 
 <p>
@@ -43,7 +43,7 @@ Or
 
 Run the command <br>
 
-`color-my-gnome` <br>
+`color-my-desktop` <br>
 
 If you prefer the cli <br>
 
@@ -54,7 +54,7 @@ You will then have the option to either create a new color profile or choose fro
 </p>
 
 ### Features:
-Color My GNOME currently has these features: <br>
+Color My Desktop currently has these features: <br>
 * Picking hex color values for <br>
   * Primary (main color used on top bar, window bar, and main window elements)
   * Secondary (used for window backgrounds and some accents)
@@ -83,11 +83,11 @@ Color My GNOME currently has these features: <br>
 
 <br clear="left" />
 
-Once the theme has finished compiling, open the gnome tweaks application and change your shell theme to "Color-My-Gnome"<br>
+Once the theme has finished compiling, open the gnome tweaks application and change your shell theme to "Color-My-Desktop"<br>
 Some apps may require logging out to refresh their colors. <br>
 
-Color my GNOME is still being tested, please backup any important files and use with caution. Color my GNOME only alters the files it comes with, <br>
-and only creates files in the Zen-browser theme folder that reference the css files created by Color my GNOME.
+Color My Desktop is still being tested, please backup any important files and use with caution. Color My Desktop only alters the files it comes with, <br>
+and only creates files in the Zen-browser theme folder that reference the css files created by Color My Desktop.
 
 ## Uninstall
 
