@@ -70,7 +70,8 @@ Color My Desktop currently has these features: <br>
    * Vesktop
    * Papirus Icons
    * GTK4 Apps
-    
+
+
 
 
 
@@ -84,8 +85,36 @@ Color My Desktop currently has these features: <br>
 
 <br clear="left" />
 
-Once the theme has finished compiling, open the gnome tweaks application and change your shell theme to "Color-My-Desktop"<br>
-Some apps may require logging out to refresh their colors. <br>
+### Finishing steps:
+
+* GNOME
+   * Once the theme has finished compiling, open the gnome tweaks application and change your shell theme to "Color-My-Desktop"<br>
+     Some apps may require logging out to refresh their colors. <br>
+
+* KDE
+   * Once the theme has finished compiling, open the system settings, navigate to the "Colors & Themes" and change your "Colors" and "Plasma Style" to Color-My-Desktop.  <br>
+
+* Vesktop
+   * The path for Vesktops theme folder will be automatically determined regardless of its installation method (flatpak), simply go to "User Settings" > "Themes <br>
+     and press the "load missing themes" button, then activate the Color-My-Desktop theme.
+
+* Zen-browser/youtube
+   * Zen-broswer has two installation options <br>
+   
+     Both will require loading css overides to be enabled, to allow this, in your browser enter `about:config` into the url bar and search for `toolkit.legacyUserProfileCustomizations.stylesheets` <br>
+          click the arrow to set the value to "true" <br>
+  
+        * Method 1 - New profile ( better for fresh zen install, if using existing profile, new profile will NOT use any existing logins/data from existing profile) <br>
+
+          run `zen-browser -p` or `flatpak run io.github.zen_browser.zen -p` for flatpak or type `about:profiles` into the url bar, then<br>
+          create a new profile named "Color-My-Desktop" in the folder `~/.local/share/Color-My-Desktop/zen-profile/`
+
+        * Method 2 - Existing profile <br>
+          In your browser enter `about:profiles` into your url bar, look for the profile currently in use and click the "Open Directory" button <br>
+          then copy the two css files from `~/.local/share/Color-My-Desktop/zen-copy/` into the `chrome` folder inside your active profiles directory <br>
+          Zen will now sync color updates from Color-My-Desktop when toggled. 
+
+
 
 Color My Desktop is still being tested, please backup any important files and use with caution. Color My Desktop only alters the files it comes with, <br>
 and only creates files in the Zen-browser theme folder that reference the css files created by Color My Desktop.
