@@ -13,6 +13,12 @@ install:
 	#  Install scss
 	install -d $(PREFIX)/share/color-my-desktop/scss
 	install -m 644 scss/*.scss $(PREFIX)/share/color-my-desktop/scss/
+	# This will create the full path and install all .css files into it
+	install -Dm 644 zen-profile/chrome/*.css -t $(PREFIX)/share/color-my-desktop/zen-profile/chrome/
+
+
+
+
 
 	# Install KDE themes
 	install -d $(KDE_INSTALL_DIR)

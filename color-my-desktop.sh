@@ -1,5 +1,6 @@
 #!/bin/bash
-
+# Copyright 2026 Schwarzen
+# SPDX-License-Identifier: Apache-2.0
 TARGET_DIR="$HOME/.local/share/Color-My-Desktop/scss"
 # Set your default values here
 DEF_P="#3584e4"   # GNOME Blue
@@ -32,13 +33,13 @@ ZEN_BASE_MANUAL="$HOME/.zen"
 ZEN_BASE_FLATPAK="$HOME/.var/app/app.zen_browser.zen/zen"
 
 
-
 CSS_IMPORT_LINE="@import url(\"file://$HOME/.local/share/Color-My-Desktop/scss/youtube.css\");
 @-moz-document domain(youtube.com) {
 
 }"
 
 CSS_IMPORT_LINE2="@import url(\"file://$HOME/.local/share/Color-My-Desktop/scss/zen.css\");"
+
 
 DIRS=(
     "$ZEN_CHROME_DIR"
@@ -732,45 +733,22 @@ else
 
     
     #  Compile YouTube CSS if user said 'y'
-    if [[ "$apply_zen" =~ ^[Yy]$ ]]; then
-	echo "Checking for Zen Browser profiles..."
-    if [ -d "$ZEN_BASE_FLATPAK" ]; then
-        ZEN_BASE="$ZEN_BASE_FLATPAK"
-    elif [ -d "$ZEN_BASE_MANUAL" ]; then
-        ZEN_BASE="$ZEN_BASE_MANUAL"
-    else
-        echo "Zen Browser profile base directory not found."
-        exit 1
-    fi
+if [[ "$apply_zen" =~ ^[Yy]$ ]]; then
 
-    REL_PATH=$(grep -m 1 "^Path=" "$ZEN_BASE/profiles.ini" | cut -d= -f2)
 
-    if [ -z "$REL_PATH" ]; then
-        echo "Could not determine the active Zen profile path."
-        exit 1
-    fi
+    ZEN_COPY_DIR="$HOME/.local/share/Color-My-Desktop/zen-copy"
+          mkdir -p "$ZEN_COPY_DIR"
 
-    #   Construct the path
-    ZEN_CHROME_DIR="$ZEN_BASE/$REL_PATH/chrome"
-    echo "Detected Zen Chrome Directory: $ZEN_CHROME_DIR"
+          printf "%s\n" "$CSS_IMPORT_LINE2" > "$ZEN_COPY_DIR/userChrome.css"
+          printf "%s\n" "$CSS_IMPORT_LINE" > "$ZEN_COPY_DIR/userContent.css"
+    
 
-    #  ADD the detected path to your DIRS array
-    DIRS+=("$ZEN_CHROME_DIR")
-
-    #   Create the folders
-    for dir in "${DIRS[@]}"; do
-        if [ -n "$dir" ]; then  # Extra safety check: only run if dir is not empty
-            mkdir -p "$dir"
-        fi
-    done
-    printf "%s\n" "$CSS_IMPORT_LINE2" > "$ZEN_CHROME_DIR/userChrome.css"
-    printf "%s\n" "$CSS_IMPORT_LINE" > "$ZEN_CHROME_DIR/userContent.css"
-
-    echo "Created userChrome.css and userContent.css in $ZEN_CHROME_DIR"
-    echo "Compiling YouTube styles..."
+    echo "Compiling Zen styles..."
     $SASS "$zen_scss" "$output_zen" --style expanded
-
-    fi
+    else
+	echo "Skip Zen"
+	fi
+   
 
 if [ -n "$PROFILE_NAME" ]; then
     # --- GUI MODE ---

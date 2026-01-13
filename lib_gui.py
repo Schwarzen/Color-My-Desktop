@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright 2026 Schwarzen
+# SPDX-License-Identifier: Apache-2.0
+
 import os
 import re
 import subprocess
@@ -51,37 +54,13 @@ Gtk.StyleContext.add_provider_for_display(
 class ThemeManager(Adw.ApplicationWindow):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.sync_flatpak_data()
-            # sorting for default theme
+
+            
+
+                   # sorting for default theme
         raw_themes = [f[1:-5] for f in os.listdir(SCSS_DIR) if f.startswith('_') and f.endswith('.scss')]
         raw_themes.sort()
         themes = ["Default"] + raw_themes
-        
-    def sync_flatpak_data(self):
-        """Copies bundled templates from /app to the user's writable ~/.local"""
-        import shutil
-                    # Standard paths in a 2026 Flatpak environment
-        SCSS_SOURCE = "/app/share/color-my-desktop/scss"
-        SCSS_TARGET = os.path.expanduser("~/.local/share/Color-My-Desktop/scss")
-        KDE_SOURCE = "/app/share/color-my-desktop/KDE"
-        KDE_TARGET = os.path.expanduser("~/.local/share/Color-My-Desktop/KDE")
-        
-        os.makedirs(SCSS_TARGET, exist_ok=True)
-        os.makedirs(KDE_TARGET, exist_ok=True)
-        # Sync SCSS Folder
-        
-        if os.path.exists(SCSS_SOURCE):
-            os.makedirs(SCSS_TARGET, exist_ok=True)
-            for file in os.listdir(SCSS_SOURCE):
-                shutil.copy(os.path.join(SCSS_SOURCE, file), SCSS_TARGET)
-
-        # Sync KDE Folder
-        if os.path.exists(KDE_SOURCE):
-            os.makedirs(KDE_TARGET, exist_ok=True)
-            # dirs_exist_ok=True is essential for 2026 updates
-            shutil.copytree(KDE_SOURCE, KDE_TARGET, dirs_exist_ok=True)
-
-        themes = [f[1:-5] for f in os.listdir(SCSS_DIR) if f.startswith('_') and f.endswith('.scss')]
         self.current_colors = {} 
         self.status_labels = {}
     
@@ -786,11 +765,15 @@ class MyApp(Adw.Application):
         dest_scss = os.path.join(HOST_DATA, "scss")
         src_kde = os.path.join(BUNDLED_DATA, "KDE")
         dest_kde = os.path.join(HOST_DATA, "KDE")
+        src_zen = os.path.join(BUNDLED_DATA, "zen-profile")
+        dest_zen = os.path.join(HOST_DATA, "zen-profile")
 
         # Check if internal bundle exists
         if not os.path.exists(src_scss):
             print(f"Error: Bundled source {src_scss} not found in Flatpak.")
             return
+            
+            
 
         # Perform the copy if the host folder is missing
         if not os.path.exists(dest_scss):
@@ -801,9 +784,15 @@ class MyApp(Adw.Application):
                 # Copy directories
                 shutil.copytree(src_scss, dest_scss, dirs_exist_ok=True)
                 shutil.copytree(src_kde, dest_kde, dirs_exist_ok=True)
+                shutil.copytree(src_zen, dest_zen, dirs_exist_ok=True)
                 print(f"Success: Copied assets to {HOST_DATA}")
             except Exception as e:
                 print(f"Failed to copy files: {e}")
+                
+                
+                
+            
+
 
                 # We continue anyway to try and open the window, 
                 # or you can sys.exit(1) here if it's strictly required

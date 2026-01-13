@@ -3,7 +3,6 @@ runtime: org.gnome.Platform
 runtime-version: '49' # GNOME ver
 sdk: org.gnome.Sdk
 command: color-my-desktop
-branch: beta 
 modules:
   - name: python-deps
     buildsystem: simple
@@ -45,10 +44,10 @@ finish-args:
   # GTK & App-specific config
   - --filesystem=xdg-config/gtk-4.0:create
   - --filesystem=xdg-config/vesktop/themes:create
-  - --filesystem=home/.zen:create
+
 
   # Consolidating XDG Data paths
-  - --filesystem=xdg-data/themes:create
+  - --filesystem=xdg-data/themes/Color-My-Desktop:create
   - --filesystem=xdg-data/color-schemes:create
   - --filesystem=xdg-data/plasma:create
   - --filesystem=xdg-data/Color-My-Desktop:create
